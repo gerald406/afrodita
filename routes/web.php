@@ -30,7 +30,5 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // Aquí añadiremos luego:
-        // Route::resource('courses', CourseController::class);
-        // Route::resource('users', UserController::class);
+        Route::view('/courses', 'admin.courses.index')->name('courses.index');
     });
