@@ -17,6 +17,26 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // --- NUEVOS CAMPOS PERSONALIZADOS ---
+
+            // Rol para permisos: 'admin' (gestiona), 'instructor' (crea cursos), 'student' (aprende)
+            $table->string('role')->default('student');
+
+            // DNI para validar identidad (crucial para tu negocio legado)
+            $table->string('dni', 8)->nullable()->unique();
+
+            // Avatar o foto de perfil
+            $table->string('avatar')->nullable();
+
+            // Biografía (importante si es instructor)
+            $table->text('bio')->nullable();
+
+            // ID del sistema antiguo (g3r41d_usuario o personal). 
+            // Nos sirve para migrar la data sin perder el rastro.
+            $table->unsignedBigInteger('legacy_id')->nullable()->index();
+
+
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
