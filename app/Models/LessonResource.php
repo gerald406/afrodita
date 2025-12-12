@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory; // <--- 1. IMPORTAR
 use Illuminate\Database\Eloquent\Model;
 
 class LessonResource extends Model
 {
+    use HasFactory; // <--- 2. USAR
+
     protected $fillable = ['lesson_id', 'title', 'type', 'path_or_url'];
 
     public function lesson()
