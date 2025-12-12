@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,30 +11,19 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens;
+    use HasApiTokens, HasFactory, HasProfilePhoto, Notifiable, TwoFactorAuthenticatable;
 
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory;
-    use HasProfilePhoto;
-    use Notifiable;
-    use TwoFactorAuthenticatable;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
+        'dni',
+        'avatar',
+        'bio',
+        'legacy_id'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
@@ -43,25 +31,43 @@ class User extends Authenticatable
         'two_factor_secret',
     ];
 
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array<int, string>
-     */
-    protected $appends = [
-        'profile_photo_url',
+    protected $casts = [
+        'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    // --- Helpers de Roles ---
+    public function isAdmin(): bool
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->role === 'admin';
+    }
+    public function isInstructor(): bool
+    {
+        return $this->role === 'instructor' || $this->role === 'admin';
+    }
+    public function isStudent(): bool
+    {
+        return $this->role === 'student';
+    }
+
+    // --- Relaciones ---
+
+    // Cursos que enseña (si es profesor)
+    public function coursesTeaching()
+    {
+        return $this->hasMany(Course::class, 'user_id');
+    }
+
+    // Matrículas del estudiante
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    // Cursos donde está matriculado (Relación directa a través de enrollments)
+    public function purchasedCourses()
+    {
+        return $this->belongsToMany(Course::class, 'enrollments', 'user_id', 'course_id')
+            ->withPivot('status', 'price_paid', 'enrolled_at')
+            ->withTimestamps();
     }
 }

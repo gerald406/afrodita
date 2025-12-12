@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Lesson extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'course_section_id',
+        'title',
+        'slug',
+        'video_url',
+        'video_iframe',
+        'content',
+        'duration_minutes',
+        'is_free',
+        'sort_order'
+    ];
+
+    public function section()
+    {
+        return $this->belongsTo(CourseSection::class, 'course_section_id');
+    }
+
+    // Materiales adjuntos (PDFs)
+    public function resources()
+    {
+        return $this->hasMany(LessonResource::class);
+    }
+
+    // Foro de dudas de la lección
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->whereNull('parent_id')->latest();
+    }
+}
