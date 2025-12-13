@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('price_paid', 10, 2)->default(0); // Cuánto pagó realmente
 
             // Estado: Activo, Completado, Reembolsado/Cancelado
-            $table->enum('status', ['active', 'completed', 'cancelled'])->default('active');
+            $table->enum('status', ['active', 'pending', 'completed', 'cancelled'])->default('pending');
 
             // Progreso: Porcentaje completado (0-100) para no calcularlo en cada consulta
             $table->unsignedTinyInteger('progress_percent')->default(0);

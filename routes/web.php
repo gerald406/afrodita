@@ -53,4 +53,6 @@ Route::middleware(['auth', 'role:admin'])
     Route::get('/users/{user}/edit', function (App\Models\User $user) {
         return view('admin.users.edit', compact('user'));
     })->name('users.edit');
+    // Gestión de Matrículas
+    Route::view('/enrollments', 'admin.enrollments.index')->name('enrollments.index');
 });

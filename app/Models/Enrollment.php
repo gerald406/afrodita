@@ -18,4 +18,16 @@ class Enrollment extends Model
     protected $casts = [
         'enrolled_at' => 'datetime',
     ];
+
+    // --- RELACIONES QUE FALTABAN ---
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
 }
