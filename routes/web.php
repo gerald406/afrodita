@@ -24,11 +24,27 @@ Route::middleware([
 // --- RUTAS DE ADMINISTRADOR ---
 // Protegidas por 'auth' Y 'role:admin'
 Route::middleware(['auth', 'role:admin'])
-    ->prefix('admin') // URL será /admin/dashboard
-    ->name('admin.')  // Nombres de ruta serán admin.dashboard
+    ->prefix('admin')
+    ->name('admin.')
     ->group(function () {
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        Route::view('/courses', 'admin.courses.index')->name('courses.index');
-    });
+    // Lista de cursos (con componente Livewire)
+    Route::view('/courses', 'admin.courses.index')->name('courses.index');
+
+    // Crear curso
+    Route::get('/courses/create', function () {
+        return view('admin.courses.create');
+    })->name('courses.create');
+
+    // Editar curso - USANDO SLUG (Recomendado para URLs amigables)
+    Route::get('/courses/{course:slug}/edit', function (App\Models\Course $course) {
+        return view('admin.courses.edit', compact('course'));
+    })->name('courses.edit');
+
+    // Alternativa: Si prefieres usar ID en lugar de slug, usa esta ruta:
+    // Route::get('/courses/{course}/edit', function (App\Models\Course $course) {
+    //     return view('admin.courses.edit', compact('course'));
+    // })->name('courses.edit');
+});

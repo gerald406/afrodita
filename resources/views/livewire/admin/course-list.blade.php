@@ -12,7 +12,7 @@
                     placeholder="Buscar por título o profesor...">
         </div>
 
-        <a href="#" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition-colors">
+        <a href="{{ route('admin.courses.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition-colors">
             <i class="fas fa-plus mr-2"></i> Nuevo Curso
         </a>
     </div>
@@ -89,10 +89,18 @@
                             </td>
 
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3" title="Editar Contenido">
+                                {{-- Corregido: usar slug o id en lugar del objeto completo --}}
+                                <a href="{{ route('admin.courses.edit', $course->slug) }}" 
+                                   class="text-indigo-600 hover:text-indigo-900 mr-3" 
+                                   title="Editar Contenido">
                                     <i class="fas fa-pen"></i>
                                 </a>
-                                <button class="text-red-500 hover:text-red-700" title="Eliminar" onclick="confirm('¿Seguro?') || event.stopImmediatePropagation()">
+                                
+                                {{-- Corregido: implementar eliminación con Livewire --}}
+                                <button 
+                                    wire:click="$dispatch('confirm-delete', { id: {{ $course->id }} })" 
+                                    class="text-red-500 hover:text-red-700" 
+                                    title="Eliminar">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>

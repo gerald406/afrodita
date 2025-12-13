@@ -12,20 +12,22 @@
         
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
     </head>
     <body class="font-sans antialiased bg-gray-100">
         
         <div class="flex h-screen overflow-hidden" 
-             x-data="{ 
+            x-data="{ 
                 sidebarOpen: false, 
                 sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
                 toggleCollapse() {
                     this.sidebarCollapsed = !this.sidebarCollapsed;
                     localStorage.setItem('sidebarCollapsed', this.sidebarCollapsed);
                 }
-             }">
+            }">
             
             <x-sidebar />
 
@@ -93,5 +95,90 @@
 
         @stack('modals')
         @livewireScripts
+        <script>
+            // Esperar a que el DOM esté cargado
+            document.addEventListener('DOMContentLoaded', function() {
+                
+                // Verificar que Livewire esté disponible antes de usarlo
+                const initLivewire = () => {
+                    if (typeof Livewire === 'undefined') {
+                        console.warn('Livewire no está disponible en esta página');
+                        return;
+                    }
+
+                    // 1. Escuchar evento de Notificación (Toast)
+                    Livewire.on('swal:toast', (event) => {
+                        const data = event[0] || event;
+                        
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+                        
+                        Toast.fire({
+                            icon: data.type || 'info',
+                            title: data.title || 'Notificación',
+                            text: data.text || ''
+                        });
+                    });
+
+                    // 2. Escuchar evento de Confirmación de Borrado
+                    Livewire.on('confirm-delete', (event) => {
+                        const data = event[0] || event;
+                        
+                        Swal.fire({
+                            title: '¿Estás seguro?',
+                            text: "No podrás revertir esto.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Sí, eliminar',
+                            cancelButtonText: 'Cancelar'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                Livewire.dispatch('delete-confirmed', { 
+                                    id: data.id || data[0]?.id 
+                                });
+                            }
+                        });
+                    });
+                };
+
+                // Intentar inicializar después de un pequeño delay
+                setTimeout(initLivewire, 100);
+            });
+
+            // Función global para confirmación de eliminación (formularios tradicionales)
+            window.confirmDelete = function(id, type, method) {
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "No podrás revertir esto.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (typeof Livewire !== 'undefined') {
+                            Livewire.dispatch('delete-confirmed', { id: id, method: method });
+                        } else {
+                            // Para formularios tradicionales
+                            const form = document.getElementById('delete-form-' + id);
+                            if (form) form.submit();
+                        }
+                    }
+                });
+            }
+        </script>
     </body>
 </html>

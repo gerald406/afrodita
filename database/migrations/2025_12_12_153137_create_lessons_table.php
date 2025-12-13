@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('slug'); // URL de la lección
 
             // Contenido:
-            $table->string('video_url')->nullable(); // Link de YouTube/Vimeo o ruta local
-            $table->string('video_iframe')->nullable(); // Código embed si es necesario
+            $table->text('video_url')->nullable(); // Link de YouTube/Vimeo o ruta local
+            $table->text('video_iframe')->nullable(); // Código embed si es necesario
             $table->longText('content')->nullable(); // Descripción textual o artículo
 
             $table->integer('duration_minutes')->default(0); // Duración estimada
