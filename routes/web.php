@@ -43,8 +43,14 @@ Route::middleware(['auth', 'role:admin'])
         return view('admin.courses.edit', compact('course'));
     })->name('courses.edit');
 
-    // Alternativa: Si prefieres usar ID en lugar de slug, usa esta ruta:
-    // Route::get('/courses/{course}/edit', function (App\Models\Course $course) {
-    //     return view('admin.courses.edit', compact('course'));
-    // })->name('courses.edit');
+    // --- RUTAS DE USUARIOS ---
+    Route::view('/users', 'admin.users.index')->name('users.index');
+
+    Route::get('/users/create', function () {
+        return view('admin.users.create');
+    })->name('users.create');
+
+    Route::get('/users/{user}/edit', function (App\Models\User $user) {
+        return view('admin.users.edit', compact('user'));
+    })->name('users.edit');
 });
