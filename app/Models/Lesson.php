@@ -37,4 +37,9 @@ class Lesson extends Model
     {
         return $this->hasMany(Comment::class)->whereNull('parent_id')->latest();
     }
+
+    public function usersCompleted()
+    {
+        return $this->belongsToMany(User::class, 'lesson_user')->withPivot('completed_at');
+    }
 }

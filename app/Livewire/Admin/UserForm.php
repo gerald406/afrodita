@@ -11,6 +11,7 @@ class UserForm extends Component
 {
     public $user;
     public $name, $email, $role = 'student', $password, $bio;
+    public $dni, $phone;
 
     public function mount($user = null)
     {
@@ -20,6 +21,8 @@ class UserForm extends Component
             $this->email = $user->email;
             $this->role = $user->role;
             $this->bio = $user->bio;
+            $this->dni = $user->dni;
+            $this->phone = $user->phone;
         }
     }
 
@@ -30,6 +33,8 @@ class UserForm extends Component
             'email' => ['required', 'email', Rule::unique('users')->ignore($this->user->id ?? null)],
             'role' => 'required|in:admin,instructor,student',
             'bio' => 'nullable|string|max:1000',
+            'dni' => ['nullable', 'numeric', 'digits_between:8,12', Rule::unique('users')->ignore($this->user->id ?? null)],
+            'phone' => 'nullable|numeric|digits_between:9,15',
         ];
 
         // Contraseña obligatoria solo al crear
@@ -46,6 +51,8 @@ class UserForm extends Component
             'email' => $this->email,
             'role' => $this->role,
             'bio' => $this->bio,
+            'dni' => $this->dni,
+            'phone' => $this->phone,
         ];
 
         // Solo actualizar password si se escribió algo

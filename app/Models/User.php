@@ -19,6 +19,7 @@ class User extends Authenticatable
         'password',
         'role',
         'dni',
+        'phone',
         'avatar',
         'bio',
         'legacy_id'
@@ -69,5 +70,29 @@ class User extends Authenticatable
         return $this->belongsToMany(Course::class, 'enrollments', 'user_id', 'course_id')
             ->withPivot('status', 'price_paid', 'enrolled_at')
             ->withTimestamps();
+    }
+
+    // Relación muchos a muchos: Lecciones que el usuario ha marcado como completas
+    public function completedLessons()
+    {
+        return $this->belongsToMany(Lesson::class)->withPivot('completed_at');
+    }
+
+    // Helper para calcular porcentaje en tiempo real
+    public function courseProgress($course)
+    {
+        $totalLessons = $course->lessons->count();
+
+        if ($totalLessons == 0) return 0;
+
+        // Contamos cuántas lecciones completadas pertenecen a ESTE curso
+        $completedCount = $this->completedLessons()
+            ->where('course_section_id', '!=', null) // Filtro de seguridad
+            ->whereHas('section', function ($q) use ($course) {
+                $q->where('course_id', $course->id);
+            })
+            ->count();
+
+        return round(($completedCount / $totalLessons) * 100);
     }
 }

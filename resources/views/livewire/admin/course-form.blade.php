@@ -69,6 +69,15 @@
 
                 <div class="space-y-6">
                     <div>
+                        <label class="block text-sm font-bold text-gray-700">Asignar Docente</label>
+                        <select wire:model="user_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                            @foreach($teachers as $teacher)
+                                <option value="{{ $teacher->id }}">{{ $teacher->name }} ({{ $teacher->dni }})</option>
+                            @endforeach
+                        </select>
+                        @error('user_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
                         <label class="block text-sm font-bold text-gray-700">Imagen de Portada</label>
                         <div class="mt-2 flex flex-col gap-4">
                             <div class="w-full h-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center relative group">

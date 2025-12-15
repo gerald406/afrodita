@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ReportController;
 
 // Página de inicio (Pública)
 Route::get('/', function () {
@@ -55,4 +56,19 @@ Route::middleware(['auth', 'role:admin'])
     })->name('users.edit');
     // Gestión de Matrículas
     Route::view('/enrollments', 'admin.enrollments.index')->name('enrollments.index');
+    //reportes
+    Route::get('/reports/students', [ReportController::class, 'downloadStudents'])->name('reports.students');
+    Route::get('/reports/course/{course}', [ReportController::class, 'downloadCourseStudents'])->name('reports.course');
+
+    // Reporte de Progreso
+    Route::view('/progress', 'admin.progress.index')->name('progress.index');
+
+    // 1. Configuración Web (General)
+    Route::view('/settings', 'admin.settings.index')->name('settings.index');
+
+    // 2. Sliders
+    Route::view('/sliders', 'admin.sliders.index')->name('sliders.index');
+
+    // 3. Moderación (Reseñas)
+    Route::view('/reviews', 'admin.reviews.index')->name('reviews.index');
 });

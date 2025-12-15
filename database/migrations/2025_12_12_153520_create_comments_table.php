@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('lesson_id')->constrained()->onDelete('cascade');
 
             $table->text('body'); // La pregunta o respuesta
+            $table->boolean('is_approved')->default(true);
 
             // AUTO-REFERENCIA: Para permitir "Responder" a un comentario.
             // Si parent_id es NULL, es una pregunta nueva.

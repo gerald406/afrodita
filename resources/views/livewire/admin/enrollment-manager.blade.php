@@ -21,10 +21,20 @@
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"><i class="fas fa-search"></i></div>
             </div>
             @if($activeTab === 'active')
-                <select wire:model.live="courseFilter" class="rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500 w-full sm:w-64">
-                    <option value="">Todos los cursos</option>
-                    @foreach($courses as $c) <option value="{{ $c->id }}">{{ Str::limit($c->title, 30) }}</option> @endforeach
-                </select>
+                <div class="flex items-center gap-2">
+                    <select wire:model.live="courseFilter" class="rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500 w-full sm:w-64">
+                        <option value="">Todos los cursos</option>
+                        @foreach($courses as $c) 
+                            <option value="{{ $c->id }}">{{ Str::limit($c->title, 30) }}</option> 
+                        @endforeach
+                    </select>
+
+                    @if($courseFilter)
+                        <a href="{{ route('admin.reports.course', $courseFilter) }}" target="_blank" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none transition shadow-sm" title="Descargar lista de este curso">
+                            <i class="fas fa-file-excel"></i>
+                        </a>
+                    @endif
+                </div>
             @endif
         </div>
 

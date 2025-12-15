@@ -57,15 +57,43 @@
                     <span x-show="!sidebarCollapsed" class="ml-3 whitespace-nowrap">Matrículas</span>
                 </a>
 
-                <div x-show="!sidebarCollapsed" class="mt-6 mb-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Sistema
+                <a href="{{ route('admin.progress.index') }}" 
+                    class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors duration-200
+                        {{ request()->routeIs('admin.progress.*') ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fas fa-chart-line text-lg w-6 text-center transition-transform group-hover:scale-110 {{ request()->routeIs('admin.progress.*') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}"></i>
+                    <span x-show="!sidebarCollapsed" class="ml-3 whitespace-nowrap">Progreso</span>
+                </a>
+
+                <a href="{{ route('admin.reviews.index') }}" 
+                    class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors duration-200
+                        {{ request()->routeIs('admin.reviews.*') ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fas fa-comments text-lg w-6 text-center transition-transform group-hover:scale-110 {{ request()->routeIs('admin.reviews.*') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}"></i>
+                    <span x-show="!sidebarCollapsed" class="ml-3 whitespace-nowrap">Reseñas</span>
+                </a>
+
+                
+
+                <div x-show="!sidebarCollapsed" class="mt-6 mb-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider transition-opacity duration-200">
+                    Sistema Web
                 </div>
                 <div x-show="sidebarCollapsed" class="my-4 border-t border-gray-700 mx-2"></div>
 
-                <a href="#" class="group flex items-center px-3 py-3 text-sm font-medium text-gray-300 rounded-lg hover:bg-slate-800 hover:text-white transition-colors duration-200">
-                    <i class="fas fa-gear text-lg w-6 text-center text-gray-400 group-hover:text-white transition-transform group-hover:scale-110"></i>
-                    <span x-show="!sidebarCollapsed" class="ml-3 whitespace-nowrap">Ajustes</span>
+                <a href="{{ route('admin.sliders.index') }}" 
+                   class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors duration-200
+                          {{ request()->routeIs('admin.sliders.*') ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fas fa-images text-lg w-6 text-center transition-transform group-hover:scale-110 {{ request()->routeIs('admin.sliders.*') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}"></i>
+                    <span x-show="!sidebarCollapsed" class="ml-3 whitespace-nowrap">Sliders</span>
                 </a>
+
+                <a href="{{ route('admin.settings.index') }}" 
+                   class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors duration-200
+                          {{ request()->routeIs('admin.settings.*') ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fas fa-gear text-lg w-6 text-center transition-transform group-hover:scale-110 {{ request()->routeIs('admin.settings.*') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}"></i>
+                    <span x-show="!sidebarCollapsed" class="ml-3 whitespace-nowrap">Configuración</span>
+                </a>
+
+                
+                
             @endif
 
             @if(Auth::user()->isStudent())

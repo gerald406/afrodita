@@ -31,6 +31,9 @@
                     <i class="fas fa-user-plus mr-2"></i> 
                     Nuevo Usuario
                 </a>
+                <a href="{{ route('admin.reports.students') }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700">
+    <i class="fas fa-file-excel mr-2"></i> Exportar Excel
+</a>
             </div>
         </div>
     </div>

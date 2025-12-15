@@ -25,7 +25,7 @@ return new class extends Migration
 
             // DNI para validar identidad (crucial para tu negocio legado)
             $table->string('dni', 8)->nullable()->unique();
-
+            $table->string('phone', 11)->nullable();
             // Avatar o foto de perfil
             $table->string('avatar')->nullable();
 

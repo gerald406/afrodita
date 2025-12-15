@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\CourseSection;
 use App\Models\Lesson;
 use App\Models\LessonResource; // Modelo para adjuntos
+use App\Models\User;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Str;
@@ -48,6 +49,9 @@ class CourseForm extends Component
     public $resourceFile; // Archivo temporal
     public $resourceUrl;  // URL externa
 
+    public $user_id; // Variable para el profesor seleccionado
+    public $teachers = []; // Lista de profesores
+
     // Reglas de validación base
     protected $rules = [
         'title' => 'required|min:5',
@@ -61,6 +65,9 @@ class CourseForm extends Component
      */
     public function mount($course = null)
     {
+        // Cargamos solo usuarios con rol instructor
+        $this->teachers = User::where('role', 'instructor')->orWhere('role', 'admin')->get();
+
         if ($course) {
             $this->course = $course;
             $this->title = $course->title;
@@ -70,8 +77,10 @@ class CourseForm extends Component
             $this->compare_price = $course->compare_price;
             $this->status = $course->status;
             $this->image = $course->image_path;
+            $this->user_id = $course->user_id;
         } else {
             $this->price = 0.00; // Valor por defecto
+            $this->user_id = auth()->id();
         }
     }
 
@@ -129,10 +138,11 @@ class CourseForm extends Component
             'slug'  => 'required|unique:courses,slug,' . ($this->course->id ?? ''),
             'price' => 'required|numeric|min:0',
             'newImage' => 'nullable|image|max:2048', // 2MB Max
+            'user_id' => 'required|exists:users,id',
         ]);
 
         $data = [
-            'user_id' => auth()->id(),
+            'user_id' => $this->user_id, // Usamos la selección del select
             'title' => $this->title,
             'slug' => $this->slug,
             'description' => $this->description,

@@ -20,6 +20,8 @@ return new class extends Migration
             // Valoración de 1 a 5 (usamos tinyInteger para optimizar espacio)
             $table->unsignedTinyInteger('rating');
 
+            $table->boolean('is_approved')->default(true); // Por defecto aprobado
+
             $table->text('comment')->nullable(); // Opinión escrita (opcional)
 
             $table->timestamps();
