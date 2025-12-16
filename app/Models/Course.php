@@ -61,4 +61,9 @@ class Course extends Model
     {
         return round($this->reviews()->avg('rating'), 1) ?? 0;
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

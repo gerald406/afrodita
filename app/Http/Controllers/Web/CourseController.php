@@ -4,38 +4,50 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\Enrollment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Muestra el catálogo de cursos (index).
+     */
+    public function index()
     {
-        // Listado de cursos con filtros simples
-        $query = Course::where('status', 'published')
-            ->with('teacher'); // Eager loading
-
-        if ($request->has('search')) {
-            $query->where('title', 'like', '%' . $request->get('search') . '%');
-        }
-
-        $courses = $query->latest()->paginate(12);
-
-        return view('courses.index', compact('courses'));
+        // Solo retornamos la vista contenedora. Livewire se encarga del resto.
+        return view('web.courses.index');
     }
 
+    /**
+     * Muestra el detalle de un curso específico (show).
+     */
     public function show(Course $course)
     {
-        // Verificar que esté publicado (o que el usuario sea el dueño/admin)
-        if ($course->status !== 'published') {
-            abort_if(!auth()->check() || (auth()->id() !== $course->user_id && !auth()->user()->isAdmin()), 404);
+        // 1. Cargar relaciones necesarias para la vista (Secciones, Lecciones, Profesor, Reseñas)
+        $course->load([
+            'teacher',
+            'sections.lessons', // Cargar lecciones dentro de secciones
+            'reviews.user'      // Cargar reseñas y sus autores
+        ])->loadCount(['students', 'reviews']);
+
+        // 2. Lógica de Matrícula (¿El usuario ya compró este curso?)
+        $isEnrolled = false;
+        $enrollmentStatus = null;
+
+        if (Auth::check()) {
+            // Buscamos si existe una matrícula para este usuario y curso
+            $enrollment = Enrollment::where('user_id', Auth::id())
+                ->where('course_id', $course->id)
+                ->first();
+
+            if ($enrollment) {
+                $isEnrolled = true;
+                $enrollmentStatus = $enrollment->status; // 'pending', 'active', etc.
+            }
         }
 
-        // Cargar relaciones necesarias para la vista de detalle
-        $course->load(['teacher', 'sections.lessons', 'reviews.user']);
-
-        // Calcular si el usuario ya compró este curso
-        $isEnrolled = auth()->check() ? auth()->user()->purchasedCourses->contains($course->id) : false;
-
-        return view('courses.show', compact('course', 'isEnrolled'));
+        // 3. Retornar la vista pasando todas las variables
+        return view('web.courses.show', compact('course', 'isEnrolled', 'enrollmentStatus'));
     }
 }

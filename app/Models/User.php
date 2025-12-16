@@ -95,4 +95,10 @@ class User extends Authenticatable
 
         return round(($completedCount / $totalLessons) * 100);
     }
+
+    // En App\Models\User.php
+    public function courses()
+    {
+        return $this->hasMany(Course::class, 'user_id'); // Ajusta la clave foránea si es distinta
+    }
 }
