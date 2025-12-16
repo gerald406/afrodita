@@ -36,6 +36,12 @@
                 </div>
                 <div x-show="sidebarCollapsed" class="my-4 border-t border-gray-700 mx-2"></div>
 
+                <a href="{{ route('admin.categories.index') }}" 
+   class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('admin.categories.*') ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">
+    <i class="fas fa-th-large text-lg w-6 text-center transition-transform group-hover:scale-110 {{ request()->routeIs('admin.categories.*') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}"></i>
+    <span x-show="!sidebarCollapsed" class="ml-3 whitespace-nowrap">Categorías</span>
+</a>
+
                 <a href="{{ route('admin.courses.index') }}" 
                    class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors duration-200
                           {{ request()->routeIs('admin.courses.*') ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">

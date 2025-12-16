@@ -69,6 +69,16 @@
 
                 <div class="space-y-6">
                     <div>
+                        <label class="block text-sm font-bold text-gray-700">Categoría</label>
+                        <select wire:model="category_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="">-- Seleccionar Categoría --</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('category_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
                         <label class="block text-sm font-bold text-gray-700">Asignar Docente</label>
                         <select wire:model="user_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                             @foreach($teachers as $teacher)

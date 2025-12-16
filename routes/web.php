@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ReportController;
 
 
 use App\Http\Controllers\Web\TeacherController;
+use App\Livewire\Admin\CategoryManager;
 
 /*
 |--------------------------------------------------------------------------
@@ -97,6 +98,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         // Reportes Excel
         Route::get('/reports/students', [ReportController::class, 'downloadStudents'])->name('reports.students');
         Route::get('/reports/course/{course}', [ReportController::class, 'downloadCourseStudents'])->name('reports.course');
+
+        Route::get('/categories', CategoryManager::class)->name('categories.index');
     });
 });
 

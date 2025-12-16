@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\Category;
 use App\Models\Course;
 use App\Models\CourseSection;
 use App\Models\Lesson;
@@ -52,6 +53,10 @@ class CourseForm extends Component
     public $user_id; // Variable para el profesor seleccionado
     public $teachers = []; // Lista de profesores
 
+    // --- NUEVAS PROPIEDADES ---
+    public $category_id;
+    public $categories = [];
+
     // Reglas de validación base
     protected $rules = [
         'title' => 'required|min:5',
@@ -68,6 +73,8 @@ class CourseForm extends Component
         // Cargamos solo usuarios con rol instructor
         $this->teachers = User::where('role', 'instructor')->orWhere('role', 'admin')->get();
 
+        $this->categories = Category::all();
+
         if ($course) {
             $this->course = $course;
             $this->title = $course->title;
@@ -76,6 +83,9 @@ class CourseForm extends Component
             $this->price = $course->price;
             $this->compare_price = $course->compare_price;
             $this->status = $course->status;
+
+            $this->category_id = $course->category_id;
+
             $this->image = $course->image_path;
             $this->user_id = $course->user_id;
         } else {
@@ -137,12 +147,14 @@ class CourseForm extends Component
             'title' => 'required|min:5',
             'slug'  => 'required|unique:courses,slug,' . ($this->course->id ?? ''),
             'price' => 'required|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
             'newImage' => 'nullable|image|max:2048', // 2MB Max
             'user_id' => 'required|exists:users,id',
         ]);
 
         $data = [
             'user_id' => $this->user_id, // Usamos la selección del select
+            'category_id' => $this->category_id,
             'title' => $this->title,
             'slug' => $this->slug,
             'description' => $this->description,
