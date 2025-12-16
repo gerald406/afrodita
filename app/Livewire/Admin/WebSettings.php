@@ -15,6 +15,12 @@ class WebSettings extends Component
     public $site_favicon, $newFavicon;
     public $popup_image, $newPopupImage;
 
+    // Agrega estas propiedades públicas
+    public $free_mode_active;
+    public $free_mode_start;
+    public $free_mode_end;
+    public $free_mode_message;
+
     public function mount()
     {
         // Obtener o crear configuración por defecto
@@ -28,6 +34,12 @@ class WebSettings extends Component
         $this->site_logo = $settings->site_logo;
         $this->site_favicon = $settings->site_favicon;
         $this->popup_image = $settings->popup_image;
+
+        $this->free_mode_active = (bool) $settings->free_mode_active;
+        // Formato compatible con input datetime-local
+        $this->free_mode_start = $settings->free_mode_start?->format('Y-m-d\TH:i');
+        $this->free_mode_end = $settings->free_mode_end?->format('Y-m-d\TH:i');
+        $this->free_mode_message = $settings->free_mode_message;
     }
 
     public function save()
@@ -39,6 +51,10 @@ class WebSettings extends Component
             'site_name' => $this->site_name,
             'popup_active' => $this->popup_active,
             'popup_link' => $this->popup_link,
+            'free_mode_active' => $this->free_mode_active,
+            'free_mode_start' => $this->free_mode_start,
+            'free_mode_end' => $this->free_mode_end,
+            'free_mode_message' => $this->free_mode_message,
         ];
 
         // Lógica de subida de imágenes

@@ -87,6 +87,40 @@
                     </div>
                 </div>
             </div>
+            <div>
+
+            <h3 class="text-lg font-bold text-gray-900 border-b pb-2 mt-4 mb-4 flex items-center">
+                <i class="fas fa-gift text-pink-500 mr-2"></i> Campaña de Acceso Gratuito
+            </h3>
+    
+            <div class="bg-pink-50 p-4 rounded-lg border border-pink-100 space-y-4">
+                <div class="flex items-center">
+                    <input wire:model="free_mode_active" type="checkbox" id="free_mode_active" class="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded">
+                    <label for="free_mode_active" class="ml-2 block text-sm font-bold text-gray-900">Activar "Modo Puertas Abiertas"</label>
+                </div>
+                
+                <p class="text-xs text-gray-500">
+                    Cuando está activo, <strong>todos los cursos son accesibles</strong> para cualquier usuario registrado, tengan o no matrícula.
+                </p>
+
+                <div x-data="{ active: @entangle('free_mode_active') }" x-show="active" x-transition class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Fecha/Hora Inicio</label>
+                        <input wire:model="free_mode_start" type="datetime-local" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Fecha/Hora Fin</label>
+                        <input wire:model="free_mode_end" type="datetime-local" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500">
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Mensaje de Barra Superior</label>
+                        <input wire:model="free_mode_message" type="text" placeholder="Ej: ¡Aprovecha! Acceso total por 24 horas." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500">
+                    </div>
+                </div>
+            </div>
+        
 
             <div class="pt-4 border-t border-gray-100 flex justify-end">
                 <button type="submit" wire:loading.attr="disabled" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-bold rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

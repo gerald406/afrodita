@@ -1,43 +1,34 @@
 <div class="space-y-6">
-    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-        <div class="flex flex-col sm:flex-row gap-3">
-            
-            <!-- Caja de búsqueda - Ocupa más espacio -->
-            <div class="relative flex-1">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        
+        <div class="flex gap-4 flex-1">
+            <div class="relative w-full sm:w-72">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i class="fas fa-search text-gray-400"></i>
                 </div>
-                <input wire:model.live.debounce.300ms="search" 
-                       type="text"
-                       class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                <input wire:model.live.debounce.300ms="search" type="text" 
+                       class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
                        placeholder="Buscar nombre o correo...">
             </div>
 
-            <!-- Select de roles - Ancho automático -->
-            <div class="sm:w-48">
-                <select wire:model.live="roleFilter" 
-                        class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                    <option value="">Todos los Roles</option>
-                    <option value="student">Estudiantes</option>
-                    <option value="instructor">Instructores</option>
-                    <option value="admin">Administradores</option>
-                </select>
-            </div>
+            <select wire:model.live="roleFilter" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">Todos los Roles</option>
+                <option value="student">Estudiantes</option>
+                <option value="instructor">Instructores</option>
+                <option value="admin">Administradores</option>
+            </select>
+        </div>
 
-            <!-- Botón - Ancho automático -->
-            <div class="sm:w-auto">
-                <a href="{{ route('admin.users.create') }}" 
-                   class="inline-flex items-center justify-center w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition-colors whitespace-nowrap">
-                    <i class="fas fa-user-plus mr-2"></i> 
-                    Nuevo Usuario
-                </a>
-                <a href="{{ route('admin.reports.students') }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700">
-    <i class="fas fa-file-excel mr-2"></i> Exportar Excel
-</a>
-            </div>
+        <div class="flex gap-2">
+            <a href="{{ route('admin.reports.students') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none transition-colors">
+                <i class="fas fa-file-excel text-green-600 mr-2"></i> Excel
+            </a>
+
+            <a href="{{ route('admin.users.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition-colors">
+                <i class="fas fa-user-plus mr-2"></i> Nuevo Usuario
+            </a>
         </div>
     </div>
-
 
     <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg border border-gray-100">
         <div class="overflow-x-auto">
@@ -46,7 +37,7 @@
                     <tr>
                         <th class="px-6 py-3">Usuario</th>
                         <th class="px-6 py-3">Rol</th>
-                        <th class="px-6 py-3">Fecha Registro</th>
+                        <th class="px-6 py-3">Puntos</th> <th class="px-6 py-3">Registro</th>
                         <th class="px-6 py-3 text-right">Acciones</th>
                     </tr>
                 </thead>
@@ -55,10 +46,13 @@
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <img class="h-10 w-10 rounded-full object-cover" src="{{ $user->profile_photo_url }}" alt="">
+                                    <img class="h-10 w-10 rounded-full object-cover border border-gray-200" src="{{ $user->profile_photo_url }}" alt="">
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
                                         <div class="text-xs text-gray-500">{{ $user->email }}</div>
+                                        @if($user->dni)
+                                            <div class="text-[10px] text-gray-400">DNI: {{ $user->dni }}</div>
+                                        @endif
                                     </div>
                                 </div>
                             </td>
@@ -71,22 +65,32 @@
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Estudiante</span>
                                 @endif
                             </td>
+                            
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    <i class="fas fa-star mr-1 text-yellow-500"></i> {{ $user->total_points ?? 0 }}
+                                </span>
+                            </td>
+
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ $user->created_at->format('d/m/Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="{{ route('admin.users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                                <a href="{{ route('admin.users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-900 mr-3" title="Editar">
                                     <i class="fas fa-pen"></i>
                                 </a>
-                                <button wire:click="$dispatch('confirm-delete', { id: {{ $user->id }} })" class="text-red-500 hover:text-red-700">
+                                <button wire:click="$dispatch('confirm-delete', { id: {{ $user->id }} })" class="text-red-500 hover:text-red-700" title="Eliminar">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-12 text-center text-gray-500">
-                                No se encontraron usuarios.
+                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="fas fa-users-slash text-gray-300 text-3xl mb-2"></i>
+                                    <p>No se encontraron usuarios con esos criterios.</p>
+                                </div>
                             </td>
                         </tr>
                     @endforelse
