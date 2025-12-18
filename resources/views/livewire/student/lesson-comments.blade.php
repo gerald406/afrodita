@@ -1,6 +1,6 @@
 <div class="space-y-8 text-slate-300">
     
-    <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+    <div class="bg-slate-800 p-4 md:p-6 rounded-2xl border border-slate-700">
         <h4 class="font-bold text-white mb-4 flex items-center gap-2">
             <i class="fas fa-comment-dots text-indigo-400"></i> Foro de la clase
         </h4>
@@ -32,15 +32,14 @@
         @forelse($comments as $comment)
             <div class="animate-fade-in-up group">
                 
-                <div class="flex gap-4">
+                <div class="flex gap-3 md:gap-4">
                     <div class="flex-shrink-0">
-                        <img class="h-10 w-10 rounded-full border border-slate-600 object-cover" 
+                        <img class="h-8 w-8 md:h-10 md:w-10 rounded-full border border-slate-600 object-cover" 
                              src="{{ $comment->user->profile_photo_url }}" 
                              alt="{{ $comment->user->name }}">
                     </div>
 
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-1">
+                    <div class="flex-1 min-w-0"> <div class="flex flex-wrap items-center gap-2 mb-1">
                             <span class="font-bold text-white text-sm">{{ $comment->user->name }}</span>
                             @if($comment->user->isInstructor())
                                 <span class="bg-indigo-500/20 text-indigo-300 text-[10px] px-1.5 rounded border border-indigo-500/30">Instructor</span>
@@ -48,7 +47,7 @@
                             <span class="text-xs text-slate-500">• {{ $comment->created_at->diffForHumans() }}</span>
                         </div>
                         
-                        <div class="text-sm text-slate-300 bg-slate-800/50 p-3 rounded-tr-xl rounded-br-xl rounded-bl-xl border border-slate-700/50 mb-2">
+                        <div class="text-sm text-slate-300 bg-slate-800/50 p-3 rounded-tr-xl rounded-br-xl rounded-bl-xl border border-slate-700/50 mb-2 break-words">
                             {{ $comment->body }}
                         </div>
 
@@ -65,7 +64,7 @@
                         </div>
 
                         @if($replyingToId === $comment->id)
-                            <div class="mt-3 ml-2 animate-fade-in-down">
+                            <div class="mt-3 ml-1 md:ml-2 animate-fade-in-down">
                                 <form wire:submit.prevent="postReply">
                                     <textarea wire:model="replyBody" rows="2" class="w-full bg-slate-900 border-slate-700 text-white rounded-lg text-xs p-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Escribe tu respuesta..."></textarea>
                                     <div class="flex justify-end gap-2 mt-2">
@@ -77,13 +76,13 @@
                         @endif
 
                         @if($comment->replies->count() > 0)
-                            <div class="mt-4 space-y-4 pl-4 border-l-2 border-slate-800 ml-2">
+                            <div class="mt-4 space-y-4 pl-2 md:pl-4 border-l-2 border-slate-800 ml-1 md:ml-2">
                                 @foreach($comment->replies as $reply)
-                                    <div class="flex gap-3">
-                                        <img class="h-8 w-8 rounded-full border border-slate-700 object-cover" src="{{ $reply->user->profile_photo_url }}" alt="{{ $reply->user->name }}">
+                                    <div class="flex gap-2 md:gap-3">
+                                        <img class="h-6 w-6 md:h-8 md:w-8 rounded-full border border-slate-700 object-cover" src="{{ $reply->user->profile_photo_url }}" alt="{{ $reply->user->name }}">
                                         
-                                        <div class="flex-1">
-                                            <div class="flex items-center gap-2 mb-1">
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex flex-wrap items-center gap-2 mb-1">
                                                 <span class="font-bold text-slate-200 text-xs">{{ $reply->user->name }}</span>
                                                 @if($reply->user->isInstructor())
                                                     <span class="bg-indigo-500/20 text-indigo-300 text-[9px] px-1 rounded border border-indigo-500/30">Instructor</span>
@@ -91,7 +90,7 @@
                                                 <span class="text-[10px] text-slate-600">• {{ $reply->created_at->diffForHumans() }}</span>
                                             </div>
                                             
-                                            <p class="text-xs text-slate-400 bg-slate-900/50 p-2 rounded-lg border border-slate-800">
+                                            <p class="text-xs text-slate-400 bg-slate-900/50 p-2 rounded-lg border border-slate-800 break-words">
                                                 {{ $reply->body }}
                                             </p>
 

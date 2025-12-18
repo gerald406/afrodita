@@ -1,67 +1,68 @@
-<div class="min-h-screen bg-slate-900 text-white font-sans">
+<div class="min-h-screen bg-slate-900 text-white font-sans flex flex-col" x-data="{ mobileTab: 'content' }">
     
-    <div class="h-16 bg-slate-950 flex items-center justify-between px-6 border-b border-slate-800 fixed w-full z-50">
-        <div class="flex items-center gap-4">
-            <a href="{{ route('student.my-courses') }}" class="text-slate-400 hover:text-white transition">
-                <i class="fas fa-arrow-left"></i> Volver
+    <div class="h-16 bg-slate-950 flex items-center justify-between px-4 lg:px-6 border-b border-slate-800 fixed w-full z-50">
+        <div class="flex items-center gap-3 lg:gap-4 overflow-hidden">
+            <a href="{{ route('student.my-courses') }}" class="text-slate-400 hover:text-white transition shrink-0">
+                <i class="fas fa-arrow-left"></i> <span class="hidden sm:inline">Volver</span>
             </a>
-            <div class="h-6 w-px bg-slate-700"></div>
-            <h1 class="font-bold text-lg truncate max-w-xl">{{ $course->title }}</h1>
+            <div class="h-6 w-px bg-slate-700 shrink-0"></div>
+            <h1 class="font-bold text-base lg:text-lg truncate">{{ $course->title }}</h1>
         </div>
-        <div class="flex items-center gap-6">
-            <div class="flex items-center gap-2 text-yellow-400 font-bold bg-yellow-400/10 px-3 py-1 rounded-full">
+        
+        <div class="flex items-center gap-3 lg:gap-6 shrink-0">
+            <div class="flex items-center gap-2 text-yellow-400 font-bold bg-yellow-400/10 px-2 lg:px-3 py-1 rounded-full text-xs lg:text-base">
                 <i class="fas fa-trophy"></i>
                 <span>{{ Auth::user()->total_points }} XP</span>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="hidden sm:flex items-center gap-2">
                 <span class="text-xs text-slate-400">Progreso:</span>
                 <span class="font-bold text-indigo-400">{{ $course->progress }}%</span>
             </div>
         </div>
     </div>
 
-    <div class="pt-16 flex flex-col lg:flex-row h-screen">
+    <div class="pt-16 flex flex-col lg:flex-row h-screen overflow-hidden">
         
-        <div class="lg:w-[70%] w-full flex flex-col h-full overflow-y-auto bg-slate-900 custom-scrollbar">
+        <div class="lg:w-[70%] w-full flex-col h-full overflow-y-auto bg-slate-900 custom-scrollbar"
+             :class="mobileTab === 'content' ? 'flex' : 'hidden lg:flex'">
             
-            <div class="w-full aspect-video bg-black relative shadow-2xl z-10">
-                <div wire:ignore> @if(Str::startsWith($currentLesson->video_iframe, '<iframe'))
-                        <div class="plyr__video-embed" id="player">
-                            {!! $currentLesson->video_iframe !!}
-                        </div>
-                    @else
-                        <video id="player" playsinline controls data-poster="{{ $course->image_path }}">
-                            <source src="{{ $currentLesson->video_url }}" type="video/mp4" />
-                        </video>
-                    @endif
-                </div>
+            <div class="w-full aspect-video bg-black relative shadow-2xl z-10 shrink-0" wire:ignore>
+                @if(Str::startsWith($currentLesson->video_iframe, '<iframe'))
+                    <div class="plyr__video-embed" id="player">
+                        {!! $currentLesson->video_iframe !!}
+                    </div>
+                @else
+                    <video id="player" playsinline controls data-poster="{{ $course->image_path }}">
+                        <source src="{{ $currentLesson->video_url }}" type="video/mp4" />
+                    </video>
+                @endif
             </div>
 
-            <div class="p-8 max-w-5xl mx-auto w-full flex-1">
+            <div class="p-4 lg:p-8 max-w-5xl mx-auto w-full flex-1">
                 
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-2xl font-bold text-white">{{ $currentLesson->title }}</h2>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 lg:mb-8">
+                    <h2 class="text-xl lg:text-2xl font-bold text-white leading-tight">{{ $currentLesson->title }}</h2>
                     
-                    <div class="flex gap-3">
+                    <div class="flex gap-3 w-full sm:w-auto">
                         @if($this->previousLesson)
-                            <button wire:click="changeLesson({{ $this->previousLesson->id }})" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-bold transition">
-                                <i class="fas fa-chevron-left mr-1"></i> Anterior
+                            <button wire:click="changeLesson({{ $this->previousLesson->id }})" class="flex-1 sm:flex-none justify-center px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-bold transition flex items-center gap-2">
+                                <i class="fas fa-chevron-left"></i> Anterior
                             </button>
                         @endif
                         @if($this->nextLesson)
-                            <button wire:click="changeLesson({{ $this->nextLesson->id }})" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-bold transition">
-                                Siguiente <i class="fas fa-chevron-right ml-1"></i>
+                            <button wire:click="changeLesson({{ $this->nextLesson->id }})" class="flex-1 sm:flex-none justify-center px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-bold transition flex items-center gap-2">
+                                Siguiente <i class="fas fa-chevron-right"></i>
                             </button>
                         @endif
                     </div>
                 </div>
 
-                <div class="mb-6 border-b border-slate-700">
-                    <nav class="-mb-px flex space-x-8">
-                        <button wire:click="$set('activeTab', 'options')" class="pb-4 px-1 border-b-2 font-medium text-sm transition-colors {{ $activeTab === 'options' ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-slate-400 hover:text-slate-300' }}">
-                            <i class="fas fa-play-circle mr-2"></i> Opciones de Lección
+                <div class="mb-6 border-b border-slate-700 overflow-x-auto">
+                    <nav class="-mb-px flex space-x-6">
+                        <button wire:click="$set('activeTab', 'options')" class="pb-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap {{ $activeTab === 'options' ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-slate-400 hover:text-slate-300' }}">
+                            <i class="fas fa-play-circle mr-2"></i> Opciones
                         </button>
-                        <button wire:click="$set('activeTab', 'comments')" class="pb-4 px-1 border-b-2 font-medium text-sm transition-colors {{ $activeTab === 'comments' ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-slate-400 hover:text-slate-300' }}">
+                        <button wire:click="$set('activeTab', 'comments')" class="pb-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap {{ $activeTab === 'comments' ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-slate-400 hover:text-slate-300' }}">
                             <i class="fas fa-comments mr-2"></i> Comentarios
                         </button>
                     </nav>
@@ -70,18 +71,17 @@
                 <div>
                     @if($activeTab === 'options')
                         <div class="animate-fade-in-up">
-                            
-                            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 flex justify-between items-center mb-6">
+                            <div class="bg-slate-800 p-4 lg:p-6 rounded-2xl border border-slate-700 flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 text-center sm:text-left">
                                 <div>
                                     <h4 class="font-bold text-white mb-1">Progreso de la lección</h4>
-                                    <p class="text-sm text-slate-400">Marca esta clase cuando la hayas terminado para ganar puntos.</p>
+                                    <p class="text-sm text-slate-400">Marca esta clase para ganar puntos.</p>
                                 </div>
                                 @if($currentLesson->users->contains(Auth::id()))
-                                    <button disabled class="px-6 py-3 bg-green-500/20 text-green-400 font-bold rounded-xl cursor-default border border-green-500/50">
+                                    <button disabled class="w-full sm:w-auto px-6 py-3 bg-green-500/20 text-green-400 font-bold rounded-xl cursor-default border border-green-500/50 flex items-center justify-center">
                                         <i class="fas fa-check-circle mr-2"></i> Completada
                                     </button>
                                 @else
-                                    <button wire:click="markAsCompleted" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/30 transition transform hover:-translate-y-0.5">
+                                    <button wire:click="markAsCompleted" class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center">
                                         Marcar como Terminada <i class="fas fa-check ml-2"></i>
                                     </button>
                                 @endif
@@ -92,11 +92,11 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     @foreach($currentLesson->resources as $resource)
                                         <a href="{{ $resource->path_or_url }}" target="_blank" class="flex items-center p-4 bg-slate-800 rounded-xl hover:bg-slate-700 transition border border-slate-700 group">
-                                            <div class="w-10 h-10 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                                            <div class="w-10 h-10 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center mr-4 shrink-0">
                                                 <i class="fas fa-download"></i>
                                             </div>
-                                            <div>
-                                                <p class="font-bold text-sm text-white">{{ $resource->title }}</p>
+                                            <div class="overflow-hidden">
+                                                <p class="font-bold text-sm text-white truncate">{{ $resource->title }}</p>
                                                 <p class="text-xs text-slate-400 uppercase">{{ $resource->type }}</p>
                                             </div>
                                         </a>
@@ -112,11 +112,12 @@
                         </div>
                     @endif
                 </div>
-
             </div>
         </div>
 
-        <div class="lg:w-[30%] w-full bg-slate-950 border-l border-slate-800 h-full overflow-y-auto custom-scrollbar">
+        <div class="lg:w-[30%] w-full bg-slate-950 border-l border-slate-800 h-full overflow-y-auto custom-scrollbar"
+             :class="mobileTab === 'lessons' ? 'block' : 'hidden lg:block'">
+            
             <div class="p-6 sticky top-0 bg-slate-950 z-10 border-b border-slate-800">
                 <h3 class="font-bold text-white mb-2">Contenido del Curso</h3>
                 <div class="w-full bg-slate-800 rounded-full h-1.5 mb-2">
@@ -125,7 +126,7 @@
                 <p class="text-xs text-slate-400 text-right">{{ $course->progress }}% Completado</p>
             </div>
 
-            <div class="p-4 space-y-4">
+            <div class="p-4 space-y-4 pb-24 lg:pb-4">
                 @foreach($course->sections as $section)
                     <div x-data="{ open: true }">
                         <button @click="open = !open" class="w-full flex justify-between items-center text-left py-2 px-2 text-slate-300 hover:text-white font-bold text-sm">
@@ -140,7 +141,7 @@
                                     $isCurrent = $currentLesson->id == $lesson->id;
                                 @endphp
                                 
-                                <button wire:click="changeLesson({{ $lesson->id }})" 
+                                <button wire:click="changeLesson({{ $lesson->id }}); mobileTab = 'content'" 
                                         class="w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all relative overflow-hidden group
                                         {{ $isCurrent ? 'bg-indigo-600/20 border border-indigo-500/50' : 'hover:bg-slate-800 border border-transparent' }}">
                                     
@@ -180,6 +181,21 @@
         </div>
     </div>
 
+    <div class="fixed bottom-0 w-full bg-slate-950 border-t border-slate-800 lg:hidden z-40 flex justify-around p-3 pb-safe">
+        <button @click="mobileTab = 'content'" 
+                :class="mobileTab === 'content' ? 'text-indigo-400' : 'text-slate-400'"
+                class="flex flex-col items-center gap-1 text-xs font-bold transition">
+            <i class="fas fa-play-circle text-xl"></i>
+            Clase Actual
+        </button>
+        <button @click="mobileTab = 'lessons'" 
+                :class="mobileTab === 'lessons' ? 'text-indigo-400' : 'text-slate-400'"
+                class="flex flex-col items-center gap-1 text-xs font-bold transition">
+            <i class="fas fa-list-ul text-xl"></i>
+            Temario
+        </button>
+    </div>
+
     @assets
         <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
         <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
@@ -187,32 +203,51 @@
 
     <script>
         document.addEventListener('livewire:initialized', () => {
-            // Inicializar Plyr
-            const player = new Plyr('#player', {
-                title: '{{ $currentLesson->title }}',
-                controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
-            });
+            let player;
 
-            // Escuchar evento de cambio de lección para actualizar video
+            function initPlayer() {
+                // IMPORTANT: Destroy previous instance to prevent duplicates
+                if (Array.isArray(window.player)) {
+                    window.player.forEach(p => p.destroy());
+                } else if (window.player && typeof window.player.destroy === 'function') {
+                    window.player.destroy();
+                }
+
+                // Initialize new player
+                const plyrInstance = new Plyr('#player', {
+                    title: '{{ $currentLesson->title }}',
+                    controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+                });
+                
+                // Save instance globally to manage it later
+                window.player = plyrInstance;
+            }
+
+            // Initial load
+            initPlayer();
+
+            // Handle lesson changes
             Livewire.on('lesson-changed', (url) => {
-                player.source = {
-                    type: 'video',
-                    sources: [
-                        {
+                if(window.player) {
+                    window.player.source = {
+                        type: 'video',
+                        sources: [{
                             src: url,
                             provider: url.includes('youtube') ? 'youtube' : (url.includes('vimeo') ? 'vimeo' : 'html5'),
-                        },
-                    ],
-                };
+                        }],
+                    };
+                } else {
+                    initPlayer();
+                }
             });
         });
     </script>
 
     <style>
-        /* Scrollbar personalizado oscuro */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </div>

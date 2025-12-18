@@ -72,13 +72,12 @@
                 <nav class="hidden md:flex space-x-8 items-center">
                     @foreach(['Inicio' => 'home', 'Cursos' => 'courses.index'] as $label => $route)
                         <a href="{{ route($route) }}" 
-                           :class="scrolled ? 'text-slate-700 hover:text-indigo-600' : 'text-white hover:text-indigo-200'"
-                           class="font-heading font-bold text-sm tracking-wide uppercase transition-colors relative group">
+                        :class="scrolled ? 'text-slate-700 hover:text-indigo-600' : 'text-white hover:text-indigo-200'"
+                        class="font-heading font-bold text-sm tracking-wide uppercase transition-colors relative group">
                             {{ $label }}
                             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
                         </a>
                     @endforeach
-                    
 
                     <a href="{{ route('teachers.index') }}" 
                     :class="scrolled ? 'text-slate-700 hover:text-indigo-600' : 'text-white hover:text-indigo-200'" 
@@ -90,8 +89,8 @@
                     @guest
                         <div class="flex items-center gap-3 ml-4">
                             <a href="{{ route('login') }}" 
-                               :class="scrolled ? 'text-slate-600 hover:text-indigo-600' : 'text-white hover:text-indigo-200'"
-                               class="font-bold text-sm transition">
+                            :class="scrolled ? 'text-slate-600 hover:text-indigo-600' : 'text-white hover:text-indigo-200'"
+                            class="font-bold text-sm transition">
                                 Ingresar
                             </a>
                             <a href="{{ route('register') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-full font-bold text-xs shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-0.5 transition duration-300 uppercase tracking-wider">
@@ -99,36 +98,108 @@
                             </a>
                         </div>
                     @else
-                        <a href="{{ route('dashboard') }}" class="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-full font-bold text-xs hover:bg-slate-800 transition shadow-lg ml-4">
-                            <img src="{{ Auth::user()->profile_photo_url }}" class="h-6 w-6 rounded-full border border-slate-600">
-                            <span>PANEL</span>
-                        </a>
+                        <div class="ml-4 relative" x-data="{ open: false }">
+                            <div>
+                                <button @click="open = !open" type="button" class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-indigo-500 transition shadow-lg">
+                                    <img class="h-9 w-9 rounded-full object-cover border border-slate-600" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
+                                </button>
+                            </div>
+
+                            <div x-show="open" 
+                                @click.away="open = false" 
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="transform opacity-0 scale-95"
+                                x-transition:enter-end="transform opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-75"
+                                x-transition:leave-start="transform opacity-100 scale-100"
+                                x-transition:leave-end="transform opacity-0 scale-95"
+                                class="origin-top-right absolute right-0 mt-2 w-56 rounded-xl shadow-2xl bg-white ring-1 ring-black ring-opacity-5 z-50 divide-y divide-gray-100" 
+                                style="display: none;">
+                                
+                                <div class="px-4 py-3">
+                                    <p class="text-xs text-gray-500">Conectado como</p>
+                                    <p class="text-sm font-bold text-gray-900 truncate">{{ Auth::user()->name }}</p>
+                                </div>
+
+                                <div class="py-1">
+                                    <a href="{{ route('student.my-courses') }}" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+                                        <i class="fas fa-graduation-cap mr-3 text-gray-400 group-hover:text-indigo-500"></i>
+                                        Mis Cursos
+                                    </a>
+                                    <a href="{{ route('profile.show') }}" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+                                        <i class="fas fa-user-cog mr-3 text-gray-400 group-hover:text-indigo-500"></i>
+                                        Mi Perfil
+                                    </a>
+                                    @if(Auth::user()->role === 'admin' || Auth::user()->role === 'instructor')
+                                        <a href="{{ route('dashboard') }}" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600">
+                                            <i class="fas fa-tachometer-alt mr-3 text-gray-400 group-hover:text-indigo-500"></i>
+                                            Panel Administrativo
+                                        </a>
+                                    @endif
+                                </div>
+
+                                <div class="py-1">
+                                    <form method="POST" action="{{ route('logout') }}" x-data>
+                                        @csrf
+                                        <a href="{{ route('logout') }}"
+                                        @click.prevent="$root.submit();"
+                                        class="group flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                            <i class="fas fa-sign-out-alt mr-3 text-red-400 group-hover:text-red-600"></i>
+                                            Cerrar Sesión
+                                        </a>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     @endguest
                 </nav>
 
                 <button @click="mobileMenu = !mobileMenu" 
                         :class="scrolled ? 'text-slate-800' : 'text-white'"
-                        class="md:hidden focus:outline-none transition-colors">
+                        class="md:hidden focus:outline-none transition-colors p-2">
                     <i class="fas fa-bars text-2xl"></i>
                 </button>
             </div>
         </div>
 
-        <div x-show="mobileMenu" x-collapse x-cloak class="md:hidden bg-white border-t border-gray-100 shadow-xl absolute w-full left-0 top-full">
+        <div x-show="mobileMenu" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             x-cloak 
+             class="md:hidden bg-white border-t border-gray-100 shadow-xl absolute w-full left-0 top-full">
+            
             <div class="px-4 pt-4 pb-6 space-y-2">
                 <a href="{{ route('home') }}" class="block px-4 py-3 rounded-lg text-slate-700 font-bold hover:bg-indigo-50">Inicio</a>
                 <a href="{{ route('courses.index') }}" class="block px-4 py-3 rounded-lg text-slate-700 font-bold hover:bg-indigo-50">Cursos</a>
-                <hr class="border-gray-100 my-2">
                 <a href="{{ route('teachers.index') }}" class="block px-4 py-3 rounded-lg text-slate-700 font-bold hover:bg-indigo-50">Docentes</a>
+                
+                <hr class="border-gray-100 my-2">
+                
                 @guest
                     <a href="{{ route('login') }}" class="block w-full text-center px-4 py-3 rounded-lg border border-slate-200 text-slate-700 font-bold mb-2">Ingresar</a>
                     <a href="{{ route('register') }}" class="block w-full text-center px-4 py-3 rounded-lg bg-indigo-600 text-white font-bold">Registrarse</a>
+                @else
+                    <div class="px-4 py-2 bg-indigo-50 rounded-lg mb-2">
+                        <p class="text-xs text-indigo-500 font-bold uppercase">Tu Cuenta</p>
+                        <p class="text-sm font-bold text-slate-800">{{ Auth::user()->name }}</p>
+                    </div>
+                    <a href="{{ route('student.my-courses') }}" class="block px-4 py-2 rounded-lg text-slate-700 hover:bg-indigo-50">Mis Cursos</a>
+                    <a href="{{ route('profile.show') }}" class="block px-4 py-2 rounded-lg text-slate-700 hover:bg-indigo-50">Mi Perfil</a>
+                    
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full text-left block px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 font-bold">Cerrar Sesión</button>
+                    </form>
                 @endguest
             </div>
         </div>
     </header>
 
-    <div class="-mt-[88px]">
+    <div class="-mt-[88px] flex-grow">
         {{ $slot }}
     </div>
 
@@ -184,9 +255,9 @@
                 </div>
             </div>
 
-            <div class="border-t border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
+            <div class="border-t border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500 text-center md:text-left">
                 <p>&copy; {{ date('Y') }} {{ $web_settings->site_name ?? 'LMS Pro' }}. Desarrollado con Laravel 12 & Livewire.</p>
-                <div class="mt-4 md:mt-0 flex space-x-6">
+                <div class="mt-4 md:mt-0 flex space-x-6 justify-center">
                     <span class="flex items-center gap-2"><i class="fas fa-shield-alt"></i> Pagos Seguros</span>
                     <span class="flex items-center gap-2"><i class="fas fa-globe"></i> Español</span>
                 </div>

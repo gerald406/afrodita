@@ -14,13 +14,20 @@
     <div class="py-12 bg-slate-50 min-h-screen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
+            @if(session('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-sm mb-6" role="alert">
+                    <p class="font-bold">¡Éxito!</p>
+                    <p>{{ session('success') }}</p>
+                </div>
+            @endif
+
             @if($enrollments->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach($enrollments as $enrollment)
                         @php
-                            // Calculamos el progreso usando el atributo que creamos en el modelo Course
-                            $progress = $enrollment->course->progress;
                             $course = $enrollment->course;
+                            // [CORRECCIÓN] Usamos el método del usuario para asegurar el cálculo correcto
+                            $progress = Auth::user()->courseProgress($course);
                         @endphp
 
                         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full group">
@@ -61,9 +68,8 @@
                                              style="width: {{ $progress }}%"></div>
                                     </div>
 
-                                    {{-- Nota: Ajusta la ruta 'student.course.learn' a tu ruta real del aula virtual --}}
                                     @if($progress == 0)
-                                        <a href="#" class="block w-full py-3 text-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition shadow-lg shadow-indigo-200">
+                                        <a href="{{ route('student.course.learn', $course) }}" class="block w-full py-3 text-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition shadow-lg shadow-indigo-200">
                                             <i class="fas fa-play mr-2"></i> Iniciar Curso
                                         </a>
                                     @elseif($progress < 100)
@@ -71,7 +77,7 @@
                                             <i class="fas fa-forward mr-2"></i> Continuar Curso
                                         </a>
                                     @else
-                                        <a href="#" class="block w-full py-3 text-center bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition shadow-lg shadow-green-200">
+                                        <a href="{{ route('student.course.learn', $course) }}" class="block w-full py-3 text-center bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition shadow-lg shadow-green-200">
                                             <i class="fas fa-redo mr-2"></i> Repasar Curso
                                         </a>
                                     @endif
