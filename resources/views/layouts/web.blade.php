@@ -7,7 +7,7 @@
     <title>{{ $web_settings->site_name ?? 'LMS Pro' }}</title>
     
     @if(isset($web_settings) && $web_settings->site_favicon)
-        <link rel="icon" href="{{ $web_settings->site_favicon }}">
+        <link rel="icon" href="{{ asset($web_settings->site_favicon) }}">
     @endif
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,21 +50,19 @@
         </div>
     </div>
 
-    <header x-data="{ scrolled: false, mobileMenu: false }" 
-            @scroll.window="scrolled = (window.pageYOffset > 20)"
-            :class="scrolled ? 'bg-white/95 backdrop-blur-md shadow-md py-2' : 'bg-white/10 backdrop-blur-sm border-b border-white/10 py-4'"
-            class="sticky top-0 w-full z-40 transition-all duration-300">
+    <header x-data="{ mobileMenu: false }" 
+            class="sticky top-0 w-full z-40 bg-white shadow-md border-b border-gray-100 transition-all duration-300">
         
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center py-4">
                 
                 <div class="flex-shrink-0 flex items-center">
                     <a href="{{ route('home') }}" class="flex items-center gap-2 group">
                         @if(isset($web_settings) && $web_settings->site_logo)
-                            <img class="h-10 w-auto" src="{{ $web_settings->site_logo }}" alt="Logo">
+                            <img class="h-10 w-auto object-contain" src="{{ asset($web_settings->site_logo) }}" alt="{{ $web_settings->site_name }}">
                         @else
                             <div class="bg-indigo-600 text-white p-1.5 rounded-lg font-bold text-xl shadow-lg">LMS</div>
-                            <span :class="scrolled ? 'text-slate-800' : 'text-white'" class="text-2xl font-heading font-extrabold tracking-tight transition-colors drop-shadow-md">PRO</span>
+                            <span class="text-slate-800 text-2xl font-heading font-extrabold tracking-tight">PRO</span>
                         @endif
                     </a>
                 </div>
@@ -72,16 +70,14 @@
                 <nav class="hidden md:flex space-x-8 items-center">
                     @foreach(['Inicio' => 'home', 'Cursos' => 'courses.index'] as $label => $route)
                         <a href="{{ route($route) }}" 
-                        :class="scrolled ? 'text-slate-700 hover:text-indigo-600' : 'text-white hover:text-indigo-200'"
-                        class="font-heading font-bold text-sm tracking-wide uppercase transition-colors relative group">
+                           class="text-slate-700 hover:text-indigo-600 font-heading font-bold text-sm tracking-wide uppercase transition-colors relative group">
                             {{ $label }}
                             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
                         </a>
                     @endforeach
 
                     <a href="{{ route('teachers.index') }}" 
-                    :class="scrolled ? 'text-slate-700 hover:text-indigo-600' : 'text-white hover:text-indigo-200'" 
-                    class="font-heading font-bold text-sm tracking-wide uppercase transition-colors group relative">
+                       class="text-slate-700 hover:text-indigo-600 font-heading font-bold text-sm tracking-wide uppercase transition-colors group relative">
                         Docentes
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 transition-all duration-300 group-hover:w-full"></span>
                     </a>
@@ -89,8 +85,7 @@
                     @guest
                         <div class="flex items-center gap-3 ml-4">
                             <a href="{{ route('login') }}" 
-                            :class="scrolled ? 'text-slate-600 hover:text-indigo-600' : 'text-white hover:text-indigo-200'"
-                            class="font-bold text-sm transition">
+                               class="text-slate-600 hover:text-indigo-600 font-bold text-sm transition">
                                 Ingresar
                             </a>
                             <a href="{{ route('register') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-full font-bold text-xs shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-0.5 transition duration-300 uppercase tracking-wider">
@@ -101,20 +96,20 @@
                         <div class="ml-4 relative" x-data="{ open: false }">
                             <div>
                                 <button @click="open = !open" type="button" class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-indigo-500 transition shadow-lg">
-                                    <img class="h-9 w-9 rounded-full object-cover border border-slate-600" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
+                                    <img class="h-9 w-9 rounded-full object-cover border border-slate-200" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
                                 </button>
                             </div>
 
                             <div x-show="open" 
-                                @click.away="open = false" 
-                                x-transition:enter="transition ease-out duration-200"
-                                x-transition:enter-start="transform opacity-0 scale-95"
-                                x-transition:enter-end="transform opacity-100 scale-100"
-                                x-transition:leave="transition ease-in duration-75"
-                                x-transition:leave-start="transform opacity-100 scale-100"
-                                x-transition:leave-end="transform opacity-0 scale-95"
-                                class="origin-top-right absolute right-0 mt-2 w-56 rounded-xl shadow-2xl bg-white ring-1 ring-black ring-opacity-5 z-50 divide-y divide-gray-100" 
-                                style="display: none;">
+                                 @click.away="open = false" 
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="transform opacity-0 scale-95"
+                                 x-transition:enter-end="transform opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="transform opacity-100 scale-100"
+                                 x-transition:leave-end="transform opacity-0 scale-95"
+                                 class="origin-top-right absolute right-0 mt-2 w-56 rounded-xl shadow-2xl bg-white ring-1 ring-black ring-opacity-5 z-50 divide-y divide-gray-100" 
+                                 style="display: none;">
                                 
                                 <div class="px-4 py-3">
                                     <p class="text-xs text-gray-500">Conectado como</p>
@@ -142,8 +137,8 @@
                                     <form method="POST" action="{{ route('logout') }}" x-data>
                                         @csrf
                                         <a href="{{ route('logout') }}"
-                                        @click.prevent="$root.submit();"
-                                        class="group flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                           @click.prevent="$root.submit();"
+                                           class="group flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                                             <i class="fas fa-sign-out-alt mr-3 text-red-400 group-hover:text-red-600"></i>
                                             Cerrar Sesión
                                         </a>
@@ -154,9 +149,7 @@
                     @endguest
                 </nav>
 
-                <button @click="mobileMenu = !mobileMenu" 
-                        :class="scrolled ? 'text-slate-800' : 'text-white'"
-                        class="md:hidden focus:outline-none transition-colors p-2">
+                <button @click="mobileMenu = !mobileMenu" class="md:hidden text-slate-700 focus:outline-none transition-colors p-2">
                     <i class="fas fa-bars text-2xl"></i>
                 </button>
             </div>
@@ -199,7 +192,7 @@
         </div>
     </header>
 
-    <div class="-mt-[88px] flex-grow">
+    <div class="flex-grow">
         {{ $slot }}
     </div>
 
@@ -211,7 +204,13 @@
                 
                 <div>
                     <div class="mb-6">
-                        <span class="text-3xl font-heading font-extrabold text-white">LMS<span class="text-indigo-500">PRO</span></span>
+                        <a href="{{ route('home') }}" class="inline-block">
+                            @if(isset($web_settings) && $web_settings->site_logo)
+                                <img class="h-12 w-auto object-contain brightness-0 invert" src="{{ asset($web_settings->site_logo) }}" alt="{{ $web_settings->site_name }}">
+                            @else
+                                <span class="text-3xl font-heading font-extrabold text-white">LMS<span class="text-indigo-500">PRO</span></span>
+                            @endif
+                        </a>
                     </div>
                     <p class="text-sm leading-relaxed mb-6 text-slate-400">
                         La plataforma líder en educación online. Conectamos estudiantes con los mejores instructores del mundo para transformar carreras.

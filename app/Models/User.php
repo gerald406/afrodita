@@ -24,6 +24,7 @@ class User extends Authenticatable
         'bio',
         'legacy_id',
         'total_points', // [NECESARIO] Para mostrar los puntos en el header del Aula
+        'last_login_at', // <--- ADD THIS
     ];
 
     protected $hidden = [
@@ -36,6 +37,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'total_points' => 'integer', // [RECOMENDADO] Castear a entero
+        'last_login_at' => 'datetime', // <--- ADD THIS
     ];
 
     // --- Helpers de Roles ---

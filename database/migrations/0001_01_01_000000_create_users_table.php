@@ -36,10 +36,10 @@ return new class extends Migration
             // Nos sirve para migrar la data sin perder el rastro.
             $table->unsignedBigInteger('legacy_id')->nullable()->index();
 
-
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
+            $table->timestamp('last_login_at')->nullable();
             $table->timestamps();
         });
 

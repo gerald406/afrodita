@@ -1,6 +1,7 @@
 <x-web-layout>
     
-    <div class="relative h-[650px] md:h-[800px] overflow-hidden -mt-[52px]"> <div class="swiper mySwiper w-full h-full">
+    <div class="relative h-[650px] md:h-[800px] overflow-hidden"> 
+        <div class="swiper mySwiper w-full h-full">
             <div class="swiper-wrapper">
                 @foreach($sliders as $slider)
                     <div class="swiper-slide relative">
@@ -10,16 +11,12 @@
                         
                         <div class="absolute inset-0 bg-slate-900/30"></div>
                         
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/60"></div>
-
-                        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
-
                         <div class="absolute inset-0 flex items-center">
                             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-20">
                                 <div class="max-w-3xl" data-aos="fade-up">
                                     
                                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-indigo-300 text-xs font-bold uppercase tracking-widest mb-6">
-                                        <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                                        <span class="w-2 h-2 rounded-full bg-white"></span>
                                         {{ $slider->subtitle ?? 'Plataforma E-Learning' }}
                                     </div>
 
@@ -61,7 +58,7 @@
                     ],
                     [
                         'icon' => 'fa-user-astronaut', 
-                        'title' => 'Mentores Expertos', 
+                        'title' => 'Docentes Expertos', 
                         'desc' => 'Aprende directamente de líderes de la industria que ya lograron lo que tú buscas.', 
                         'gradient' => 'from-violet-600 to-fuchsia-500',
                         'shadow' => 'shadow-violet-500/40',
@@ -69,8 +66,8 @@
                     ],
                     [
                         'icon' => 'fa-certificate', 
-                        'title' => 'Certificación Oficial', 
-                        'desc' => 'Valida tus nuevas habilidades con certificados verificables y compartibles en LinkedIn.', 
+                        'title' => 'Materiales Exclusivos', 
+                        'desc' => 'Contenido exclusivo para ti que contribuye a tu formación.', 
                         'gradient' => 'from-emerald-500 to-teal-400',
                         'shadow' => 'shadow-emerald-500/40',
                         'text_hover' => 'text-emerald-600'
@@ -143,12 +140,10 @@
 
         <div class="relative z-10 max-w-7xl mx-auto px-4">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
-                
                 <x-stat-counter icon="fa-users" :target="$stats['students']" label="Estudiantes Activos" />
                 <x-stat-counter icon="fa-book-open" :target="$stats['courses']" label="Cursos Disponibles" />
                 <x-stat-counter icon="fa-video" :target="$stats['lessons']" label="Lecciones Totales" />
                 <x-stat-counter icon="fa-clock" :target="$stats['hours']" label="Horas de Contenido" suffix="+" />
-
             </div>
         </div>
     </section>
