@@ -101,19 +101,27 @@
                             </div>
 
                             <div x-show="tab === 'reviews'" x-transition.opacity>
-                                <div class="flex items-center gap-4 bg-gray-50 p-6 rounded-xl border border-gray-100 mb-8">
-                                    <div class="text-center">
-                                        <span class="block text-5xl font-extrabold text-gray-900">{{ $course->rating }}</span>
-                                        <div class="text-yellow-400 text-xs mt-1">
-                                            @for($i=1; $i<=5; $i++) <i class="fas fa-star"></i> @endfor
+    
+                                <div class="flex items-center gap-6 bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-8">
+                                    <div class="text-center min-w-[100px]">
+                                        <span class="block text-5xl font-extrabold text-slate-800">{{ number_format($course->rating, 1) }}</span>
+                                        <div class="text-yellow-400 text-xs mt-2 mb-1">
+                                            @for($i=1; $i<=5; $i++) 
+                                                <i class="fas fa-star {{ $course->rating >= $i ? '' : 'text-gray-300' }}"></i> 
+                                            @endfor
                                         </div>
-                                        <span class="text-xs text-gray-500 font-medium">Rating Curso</span>
+                                        <span class="text-xs text-gray-500 font-medium">Promedio General</span>
                                     </div>
-                                    <div class="h-12 w-px bg-gray-200 mx-2"></div>
-                                    <div class="flex-1">
-                                        <p class="text-sm text-gray-600 italic">"Las reseñas de los estudiantes aparecerán aquí una vez que se implemente el módulo completo de comentarios."</p>
+                                    
+                                    <div class="h-16 w-px bg-gray-200 hidden sm:block"></div>
+                                    
+                                    <div class="flex-1 text-sm text-gray-600">
+                                        <p>Basado en <strong>{{ $course->reviews_count }}</strong> reseñas de estudiantes verificados.</p>
                                     </div>
                                 </div>
+
+                                @livewire('web.course-reviews', ['course' => $course])
+
                             </div>
                         </div>
                     </div>

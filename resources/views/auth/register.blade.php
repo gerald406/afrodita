@@ -15,6 +15,16 @@
             </div>
 
             <div class="mt-4">
+                <x-label for="dni" value="DNI / Identificación" />
+                <x-input id="dni" class="block mt-1 w-full" type="text" name="dni" :value="old('dni')" required autocomplete="dni" placeholder="Ej: 12345678" />
+            </div>
+
+            <div class="mt-4">
+                <x-label for="phone" value="Teléfono / Celular" />
+                <x-input id="phone" class="block mt-1 w-full" type="text" name="phone" :value="old('phone')" required autocomplete="tel" placeholder="Ej: 999999999" />
+            </div>
+
+            <div class="mt-4">
                 <x-label for="email" value="{{ __('Email') }}" />
                 <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
             </div>

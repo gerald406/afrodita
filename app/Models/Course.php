@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Support\Facades\Auth;
+
 class Course extends Model
 {
     use HasFactory;
@@ -65,5 +67,29 @@ class Course extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function getProgressAttribute()
+    {
+        // 1. Contar total de lecciones del curso
+        // Usamos flatMap para obtener todas las lecciones de todas las secciones
+        $totalLessons = $this->sections->flatMap(function ($section) {
+            return $section->lessons;
+        })->count();
+
+        if ($totalLessons == 0) {
+            return 0;
+        }
+
+        // 2. Contar cuántas de esas lecciones ha completado el usuario actual
+        // Usamos whereHas para filtrar lecciones que tengan al usuario en la pivote
+        $completedLessons = Lesson::whereIn('course_section_id', $this->sections->pluck('id'))
+            ->whereHas('users', function ($query) {
+                $query->where('user_id', Auth::id());
+            })
+            ->count();
+
+        // 3. Calcular porcentaje
+        return round(($completedLessons / $totalLessons) * 100);
     }
 }

@@ -42,4 +42,10 @@ class Lesson extends Model
     {
         return $this->belongsToMany(User::class, 'lesson_user')->withPivot('completed_at');
     }
+
+    public function users()
+    {
+        // Relación con la tabla pivote 'lesson_user' que creamos
+        return $this->belongsToMany(User::class)->withPivot('completed_at');
+    }
 }

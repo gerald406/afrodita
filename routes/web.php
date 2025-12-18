@@ -15,7 +15,6 @@ use App\Livewire\Student\CourseLearn; // Componente Livewire del Aula
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ReportController;
 
-
 use App\Http\Controllers\Web\TeacherController;
 use App\Livewire\Admin\CategoryManager;
 
