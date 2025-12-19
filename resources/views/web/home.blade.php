@@ -26,7 +26,7 @@
                             
                             {{-- 1. IMAGEN: Sin opacidad, con efecto zoom suave al hover --}}
                             <img src="{{ asset($slider->image_path) }}" 
-                                 class="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-105" 
+                                 class="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-85" 
                                  alt="{{ $slider->title }}">
                             
                             {{-- 2. GRADIENTE SUTIL: Solo para que el texto blanco se lea, sin oscurecer toda la foto --}}

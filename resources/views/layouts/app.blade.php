@@ -95,6 +95,7 @@
 
         @stack('modals')
         @livewireScripts
+        @stack('scripts')
         <script>
             // Esperar a que el DOM esté cargado
             document.addEventListener('DOMContentLoaded', function() {

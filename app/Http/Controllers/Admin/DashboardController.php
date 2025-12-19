@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\User;
-use App\Models\LoginActivity; // [IMPORTANTE] Importar el modelo de actividad
-use App\Models\Enrollment;
-use Illuminate\Http\Request;
+use App\Models\LoginActivity;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -15,54 +13,51 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // 1. Estadísticas Generales (Tarjetas Superiores)
+        // 1. TARJETAS SUPERIORES (KPIs)
         $stats = [
             'total_students'    => User::where('role', 'student')->count(),
             'total_instructors' => User::where('role', 'instructor')->count(),
             'total_courses'     => Course::count(),
-            // Cursos en borrador o pendientes de aprobación
+            'published_courses' => Course::where('status', 'published')->count(),
             'pending_courses'   => Course::where('status', 'draft')->count(),
+            // Ingresos totales (simulado, si tuvieras tabla orders)
+            'total_revenue'     => 0,
         ];
 
-        // 2. Gráfico: Últimos 7 días (Logins vs Registros)
+        // 2. DATOS PARA EL GRÁFICO (Últimos 7 días)
         $chartData = $this->getChartData();
+        // 3. ÚLTIMOS USUARIOS (Tabla inferior)
+        // Usamos LoginActivity para ver quién entró realmente
+        $latestLogins = LoginActivity::with('user')
+            ->latest()
+            ->take(5)
+            ->get();
 
-        // 3. Usuarios Recientes 
-        // Ordenados por la fecha de último login (que configuramos en el modelo User)
-        $latestUsers = User::orderByDesc('last_login_at')->take(5)->get();
-
-        return view('admin.dashboard', compact('stats', 'chartData', 'latestUsers'));
+        return view('admin.dashboard', compact('stats', 'chartData', 'latestLogins'));
     }
 
     private function getChartData()
     {
-        $dates = collect();
-        $registrations = collect(); // Nuevos usuarios registrados
-        $logins = collect();        // Inicios de sesión (Actividad)
+        $dates = [];
+        $registrations = [];
+        $logins = [];
 
-        // Recorrer los últimos 7 días
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i);
             $formattedDate = $date->format('Y-m-d');
-            $displayDate = $date->format('d/m'); // Ejemplo: 18/12
 
-            // A. Contar usuarios registrados ese día
-            $registrationsCount = User::whereDate('created_at', $formattedDate)->count();
+            // Labels para el eje X (Ej: "Lun 12")
+            $dates[] = ucfirst($date->translatedFormat('D d'));
 
-            // B. Contar ingresos (logins) ese día usando la tabla LoginActivity
-            $loginsCount = LoginActivity::whereDate('created_at', $formattedDate)->count();
-
-            // Agregar a las colecciones
-            $dates->push($displayDate);
-            $registrations->push($registrationsCount);
-            $logins->push($loginsCount);
+            // Datos
+            $registrations[] = User::whereDate('created_at', $formattedDate)->count();
+            $logins[] = LoginActivity::whereDate('created_at', $formattedDate)->count();
         }
 
-        // Retornamos los datos con las claves exactas que espera el Javascript de la vista
         return [
             'labels' => $dates,
-            'registrations' => $registrations, // Línea punteada verde en el gráfico
-            'logins' => $logins                // Línea azul rellena en el gráfico
+            'registrations' => $registrations,
+            'logins' => $logins
         ];
     }
 }
