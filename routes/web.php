@@ -18,6 +18,10 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Web\TeacherController;
 use App\Livewire\Admin\CategoryManager;
 
+use App\Livewire\Admin\QuizList;
+use App\Livewire\Admin\QuizForm;
+use App\Livewire\Admin\QuizBuilder;
+
 /*
 |--------------------------------------------------------------------------
 | RUTAS PÚBLICAS (Frontend)
