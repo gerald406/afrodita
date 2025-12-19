@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\View;    // Necesario para compartir variables
 use Illuminate\Support\Facades\Cache;   // Necesario para rendimiento
 use Illuminate\Support\Facades\Schema;  // Necesario para evitar errores de longitud en BD
 
+use App\Models\Category;
+use App\Models\WebSetting;
+
 // --- IMPORTACIONES PARA EL LOGIN TRACKING ---
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Login;
@@ -49,6 +52,7 @@ class AppServiceProvider extends ServiceProvider
 
                 // Inyectamos la variable $web_settings en la vista
                 $view->with('web_settings', $settings);
+                View::share('globalCategories', Category::all());
             });
         } catch (\Exception $e) {
             // Si ocurre un error (ej. tabla no existe), no hacemos nada
