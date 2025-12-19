@@ -178,7 +178,7 @@
                                     <li class="flex items-center gap-3"><i class="fas fa-clock text-indigo-500 w-5 text-center"></i> {{ $course->lessons->sum('duration_minutes') }} min de contenido</li>
                                     <li class="flex items-center gap-3"><i class="fas fa-mobile-alt text-indigo-500 w-5 text-center"></i> Acceso en móviles</li>
                                     <li class="flex items-center gap-3"><i class="fas fa-infinity text-indigo-500 w-5 text-center"></i> Acceso de por vida</li>
-                                    <li class="flex items-center gap-3"><i class="fas fa-certificate text-indigo-500 w-5 text-center"></i> Certificado de finalización</li>
+                                    
                                 </ul>
                             </div>
                         </div>

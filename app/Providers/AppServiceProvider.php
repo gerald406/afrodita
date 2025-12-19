@@ -35,27 +35,34 @@ class AppServiceProvider extends ServiceProvider
         // 1. Configuración de longitud de strings
         Schema::defaultStringLength(191);
 
-        // 2. --- REGISTRAR EL LISTENER DE LOGIN --- (NUEVO)
-        // Esto conecta el evento de Login de Laravel con tu listener personalizado
+        // 2. Listener de Login
         Event::listen(
             Login::class,
             LogUserLogin::class
         );
 
-        // 3. COMPARTIR VARIABLE GLOBAL $web_settings
+        // 3. VARIABLES GLOBALES (Optimizadas)
         try {
+            // Usamos view composer para inyectar datos en TODAS las vistas ('*')
             View::composer('*', function ($view) {
-                // Usamos Cache para no consultar la base de datos en cada recarga
-                $settings = Cache::remember('web_settings', 3600, function () {
+
+                // A. Configuración Global (Cacheado por 24h o hasta que se limpie)
+                $web_settings = Cache::remember('web_settings', 86400, function () {
                     return GeneralSetting::first() ?? new GeneralSetting();
                 });
 
-                // Inyectamos la variable $web_settings en la vista
-                $view->with('web_settings', $settings);
-                View::share('globalCategories', Category::all());
+                // B. Categorías Globales (Cacheado por 24h)
+                // Solo traemos categorías que tengan al menos un curso
+                $globalCategories = Cache::remember('global_categories', 86400, function () {
+                    return Category::has('courses')->get();
+                });
+
+                // Inyectamos ambas variables de forma consistente
+                $view->with('web_settings', $web_settings)
+                    ->with('globalCategories', $globalCategories);
             });
         } catch (\Exception $e) {
-            // Si ocurre un error (ej. tabla no existe), no hacemos nada
+            // Evita errores si se ejecuta antes de correr migraciones
         }
     }
 }

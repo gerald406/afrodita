@@ -4,6 +4,7 @@ namespace App\Livewire\Web;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Url; // Importante para Livewire 3
 use App\Models\Course;
 use App\Models\Category;
 
@@ -11,40 +12,47 @@ class CourseCatalog extends Component
 {
     use WithPagination;
 
-    // Propiedades públicas (se sincronizan con la URL)
+    // Propiedades públicas sincronizadas con la URL
+    #[Url(except: '')]
     public $search = '';
+
+    #[Url(except: 'newest')]
     public $sort = 'newest';
-    public $category = ''; // Slug de la categoría seleccionada
 
-    // Modificar la URL para que sea compartible (ej: ?search=laravel&sort=price_asc)
-    protected $queryString = [
-        'search' => ['except' => ''],
-        'category' => ['except' => ''],
-        'sort' => ['except' => 'newest'],
-    ];
+    #[Url(except: '')]
+    public $category = ''; // ID o Slug de la categoría
 
-    // Resetear paginación cuando se busca o filtra
-    public function updatingSearch()
+    // Resetear paginación al cambiar filtros
+    public function updatedSearch()
     {
         $this->resetPage();
     }
-    public function updatingSort()
+    public function updatedSort()
     {
         $this->resetPage();
     }
-    public function updatingCategory()
+    public function updatedCategory()
     {
+        $this->resetPage();
+    }
+
+    // Método para limpiar todo desde el botón de "No resultados"
+    public function resetFilters()
+    {
+        $this->reset(['search', 'category', 'sort']);
         $this->resetPage();
     }
 
     public function render()
     {
-        // 1. Obtener Categorías con conteo de cursos activos
-        $categories = Category::withCount(['courses' => function ($q) {
+        // 1. Categorías para el sidebar (solo las que tienen cursos publicados)
+        $categories = Category::whereHas('courses', function ($q) {
+            $q->where('status', 'published');
+        })->withCount(['courses' => function ($q) {
             $q->where('status', 'published');
         }])->get();
 
-        // 2. Query Principal de Cursos
+        // 2. Query Principal
         $coursesQuery = Course::query()
             ->where('status', 'published')
             ->with(['teacher', 'category']); // Eager loading
@@ -53,15 +61,16 @@ class CourseCatalog extends Component
         if ($this->search) {
             $coursesQuery->where(function ($q) {
                 $q->where('title', 'like', '%' . $this->search . '%')
-                    ->orWhere('description', 'like', '%' . $this->search . '%');
+                    ->orWhere('description', 'like', '%' . $this->search . '%')
+                    ->orWhereHas('teacher', function ($t) {
+                        $t->where('name', 'like', '%' . $this->search . '%');
+                    });
             });
         }
 
-        // Filtro: Categoría
+        // Filtro: Categoría (por ID o Slug, asumimos ID por tu código anterior)
         if ($this->category) {
-            $coursesQuery->whereHas('category', function ($q) {
-                $q->where('slug', $this->category);
-            });
+            $coursesQuery->where('category_id', $this->category);
         }
 
         // Ordenamiento
@@ -85,6 +94,6 @@ class CourseCatalog extends Component
         return view('livewire.web.course-catalog', [
             'courses' => $courses,
             'categories' => $categories
-        ]);
+        ])->layout('layouts.web');
     }
 }

@@ -23,6 +23,7 @@
                 <thead class="bg-gray-50 text-gray-500 text-xs font-semibold uppercase tracking-wider text-left">
                     <tr>
                         <th scope="col" class="px-6 py-3">Curso</th>
+                        <th scope="col" class="px-6 py-3">Categoría</th>
                         <th scope="col" class="px-6 py-3">Precio</th>
                         <th scope="col" class="px-6 py-3">Estado</th>
                         <th scope="col" class="px-6 py-3">Alumnos</th>
@@ -52,6 +53,19 @@
                                         </div>
                                     </div>
                                 </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($course->category)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                        {{-- Icono opcional si tu tabla categorías tiene iconos --}}
+                                        <i class="fas fa-tag mr-1.5 text-indigo-400 text-[10px]"></i>
+                                        {{ $course->category->name }}
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        Sin Categoría
+                                    </span>
+                                @endif
                             </td>
 
                             <td class="px-6 py-4 whitespace-nowrap">

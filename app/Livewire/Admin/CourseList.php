@@ -43,7 +43,7 @@ class CourseList extends Component
 
     public function render()
     {
-        $courses = Course::with(['teacher', 'students'])
+        $courses = Course::with(['teacher', 'students', 'category'])
             ->where('title', 'like', '%' . $this->search . '%')
             ->orWhereHas('teacher', function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%');
