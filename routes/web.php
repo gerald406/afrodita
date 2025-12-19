@@ -63,6 +63,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
         // Aula Virtual (Reproductor de Video) - Full Page Livewire
         Route::get('/course/{course:slug}/learn/{lesson?}', CourseLearn::class)->name('course.learn');
+
+        Route::get('/quiz/{quiz}', \App\Livewire\Student\QuizRunner::class)->name('quiz.show');
     });
 
     // --- ÁREA DE ADMINISTRADOR (Solo rol: admin) ---
@@ -103,6 +105,12 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/reports/course/{course}', [ReportController::class, 'downloadCourseStudents'])->name('reports.course');
 
         Route::get('/categories', CategoryManager::class)->name('categories.index');
+
+        // MÓDULO DE EXÁMENES
+        Route::get('/quizzes', QuizList::class)->name('quizzes.index');
+        Route::get('/quizzes/create', QuizForm::class)->name('quizzes.create'); // Crear configuración
+        Route::get('/quizzes/{quiz}/edit', QuizForm::class)->name('quizzes.edit'); // Editar configuración
+        Route::get('/quizzes/{quiz}/builder', QuizBuilder::class)->name('quizzes.builder'); // Gestionar Preguntas
     });
 });
 

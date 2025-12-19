@@ -95,6 +95,7 @@
 
         @stack('modals')
         @livewireScripts
+        <script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/classic/ckeditor.js"></script>
         @stack('scripts')
         <script>
             // Esperar a que el DOM esté cargado

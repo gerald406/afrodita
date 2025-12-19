@@ -80,11 +80,30 @@
 
             <x-slot name="content">
                 <div class="space-y-4">
-                    <div>
+                    {{-- <div>
                         <label class="block text-sm font-bold text-gray-700">Enunciado de la Pregunta</label>
+
                         <textarea wire:model="content" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Escribe la pregunta aquí..."></textarea>
+
                         @error('content') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div> --}}
+
+                    <div class="mb-4"> 
+                        <label class="block text-sm font-bold text-gray-700">Enunciado de la Pregunta
+                        </label>
+
+                        <div class="mt-1">
+                            <x-rich-text 
+                                wire:model.defer="content" 
+                                placeholder="Escribe la pregunta aquí..." 
+                            />
+                        </div>
+
+                        @error('content') 
+                            <span class="text-red-500 text-xs">{{ $message }}</span> 
+                        @enderror
                     </div>
+
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>

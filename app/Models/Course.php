@@ -93,4 +93,10 @@ class Course extends Model
         // 3. Calcular porcentaje
         return round(($completedLessons / $totalLessons) * 100);
     }
+
+    // Relación: Un curso tiene exámenes
+    public function quizzes()
+    {
+        return $this->hasMany(Quiz::class);
+    }
 }

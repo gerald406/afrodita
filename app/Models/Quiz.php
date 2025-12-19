@@ -12,7 +12,7 @@ class Quiz extends Model
 
     protected $fillable = [
         'course_id',
-        'lesson_id',
+        // 'lesson_id',
         'title',
         'slug',
         'description',

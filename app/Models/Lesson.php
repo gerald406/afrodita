@@ -13,6 +13,7 @@ class Lesson extends Model
         'course_section_id',
         'title',
         'slug',
+        'type',
         'video_url',
         'video_iframe',
         'content',
@@ -47,5 +48,10 @@ class Lesson extends Model
     {
         // Relación con la tabla pivote 'lesson_user' que creamos
         return $this->belongsToMany(User::class)->withPivot('completed_at');
+    }
+
+    public function quiz()
+    {
+        return $this->hasOne(Quiz::class);
     }
 }

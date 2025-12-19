@@ -49,6 +49,13 @@
                     <span x-show="!sidebarCollapsed" class="ml-3 whitespace-nowrap">Cursos</span>
                 </a>
 
+                <a href="{{ route('admin.quizzes.index') }}" 
+                   class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors duration-200
+                          {{ request()->routeIs('admin.quizzes.*') ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fas fa-clipboard-question text-lg w-6 text-center transition-transform group-hover:scale-110 {{ request()->routeIs('admin.quizzes.*') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}"></i>
+                    <span x-show="!sidebarCollapsed" class="ml-3 whitespace-nowrap">Exámenes</span>
+                </a>
+
                 <a href="{{ route('admin.users.index') }}" 
                    class="group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors duration-200
                           {{ request()->routeIs('admin.users.*') ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-300 hover:bg-slate-800 hover:text-white' }}">

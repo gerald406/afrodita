@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('course_id')->constrained()->cascadeOnDelete();
 
             // Relación opcional: Si el quiz pertenece a una lección específica (Bloqueo de avance)
-            $table->foreignId('lesson_id')->nullable()->constrained()->nullOnDelete();
+            // $table->foreignId('lesson_id')->nullable()->constrained()->nullOnDelete();
 
             // Información Básica
             $table->string('title'); // Título del examen
