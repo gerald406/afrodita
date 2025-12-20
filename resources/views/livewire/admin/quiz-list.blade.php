@@ -6,7 +6,7 @@
             
             <div class="flex gap-4 w-full md:w-auto">
                 <input wire:model.live.debounce.300ms="search" type="text" placeholder="Buscar examen..." class="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 w-full md:w-64">
-                
+                                
                 <a href="{{ route('admin.quizzes.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow transition flex items-center gap-2 whitespace-nowrap">
                     <i class="fas fa-plus"></i> Nuevo Examen
                 </a>
@@ -50,6 +50,12 @@
                                     {{-- Botón Constructor (Builder) --}}
                                     <a href="{{ route('admin.quizzes.builder', $quiz) }}" class="text-indigo-600 hover:text-indigo-900 border border-indigo-200 bg-indigo-50 px-3 py-1 rounded hover:bg-indigo-100 transition" title="Gestionar Preguntas">
                                         <i class="fas fa-layer-group"></i> Preguntas
+                                    </a>
+
+                                    <a href="{{ route('admin.quizzes.grades', $quiz->id) }}" 
+                                    class="text-indigo-600 hover:text-indigo-900 mr-3" 
+                                    title="Ver Notas">
+                                        <i class="fas fa-chart-bar"></i> Notas
                                     </a>
                                     
                                     {{-- Botón Editar Configuración --}}

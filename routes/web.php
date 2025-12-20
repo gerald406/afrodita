@@ -21,6 +21,7 @@ use App\Livewire\Admin\CategoryManager;
 use App\Livewire\Admin\QuizList;
 use App\Livewire\Admin\QuizForm;
 use App\Livewire\Admin\QuizBuilder;
+use App\Livewire\Admin\QuizGrades;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,6 +112,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/quizzes/create', QuizForm::class)->name('quizzes.create'); // Crear configuración
         Route::get('/quizzes/{quiz}/edit', QuizForm::class)->name('quizzes.edit'); // Editar configuración
         Route::get('/quizzes/{quiz}/builder', QuizBuilder::class)->name('quizzes.builder'); // Gestionar Preguntas
+        Route::get('/quizzes/{quiz}/grades', QuizGrades::class)->name('quizzes.grades'); // Reporte de Notas de un Examen
     });
 });
 
