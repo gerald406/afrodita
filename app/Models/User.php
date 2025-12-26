@@ -103,6 +103,18 @@ class User extends Authenticatable
     // --- Helpers de Progreso ---
 
     /**
+     * Verifica si el usuario tiene una matrícula activa en el curso especificado.
+     * Usado por CoursePolicy para autorización de acceso al contenido.
+     */
+    public function hasActiveEnrollment($courseId): bool
+    {
+        return $this->enrollments()
+            ->where('course_id', $courseId)
+            ->whereIn('status', ['active', 'completed'])
+            ->exists();
+    }
+
+    /**
      * Calcula el porcentaje de avance de un curso específico para este usuario.
      * Optimizado para usar la colección de lecciones del curso.
      */

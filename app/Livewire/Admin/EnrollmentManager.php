@@ -85,10 +85,13 @@ class EnrollmentManager extends Component
     {
         // Solo buscar si hay más de 2 caracteres
         if (strlen($this->userSearch) > 2) {
+            // SEGURIDAD: Mejorar binding de parámetros para prevenir SQL injection
+            $searchTerm = '%' . $this->userSearch . '%';
+
             $this->foundUsers = User::where('role', 'student')
-                ->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->userSearch . '%')
-                        ->orWhere('email', 'like', '%' . $this->userSearch . '%');
+                ->where(function ($q) use ($searchTerm) {
+                    $q->where('name', 'like', $searchTerm)
+                        ->orWhere('email', 'like', $searchTerm);
                 })
                 ->take(5)
                 ->get();
