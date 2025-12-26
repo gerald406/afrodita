@@ -1,5 +1,6 @@
 <div class="min-h-screen bg-slate-900 text-white font-sans flex flex-col" x-data="{ mobileTab: 'content' }">
     
+    {{-- HEADER (Sin cambios mayores, solo mantenemos estructura) --}}
     <div class="h-16 bg-slate-950 flex items-center justify-between px-4 lg:px-6 border-b border-slate-800 fixed w-full z-50">
         <div class="flex items-center gap-3 lg:gap-4 overflow-hidden">
             <a href="{{ route('student.my-courses') }}" class="text-slate-400 hover:text-white transition shrink-0">
@@ -12,7 +13,7 @@
         <div class="flex items-center gap-3 lg:gap-6 shrink-0">
             <div class="flex items-center gap-2 text-yellow-400 font-bold bg-yellow-400/10 px-2 lg:px-3 py-1 rounded-full text-xs lg:text-base">
                 <i class="fas fa-trophy"></i>
-                <span>{{ Auth::user()->total_points }} XP</span>
+                <span>{{ Auth::user()->total_points }} Pts</span>
             </div>
             <div class="hidden sm:flex items-center gap-2">
                 <span class="text-xs text-slate-400">Progreso:</span>
@@ -23,30 +24,38 @@
 
     <div class="pt-16 flex flex-col lg:flex-row h-screen overflow-hidden">
         
+        {{-- ÁREA PRINCIPAL (VIDEO) --}}
         <div class="lg:w-[70%] w-full flex-col h-full overflow-y-auto bg-slate-900 custom-scrollbar"
-            :class="mobileTab === 'content' ? 'flex' : 'hidden lg:flex'">
+             :class="mobileTab === 'content' ? 'flex' : 'hidden lg:flex'">
 
+            {{-- 
+                [IMPORTANTE] Contenedor del reproductor.
+                Usamos wire:key único basado en la lección para forzar a Livewire 
+                a redibujar el DOM si cambia el ID, asegurando que Plyr se limpie.
+            --}}
+            <div class="w-full aspect-video bg-black relative shadow-2xl z-10 shrink-0" 
+                 wire:key="lesson-player-{{ $currentLesson->id }}"
+                 wire:ignore>
+                
+                @if(Str::startsWith($currentLesson->video_iframe, '<iframe'))
+                    <div class="plyr__video-embed" id="player">
+                        {!! $currentLesson->video_iframe !!}
+                    </div>
+                @else
+                    <video id="player" playsinline controls data-poster="{{ $course->image_path }}">
+                        <source src="{{ $currentLesson->video_url }}" type="video/mp4" />
+                    </video>
+                @endif
+            </div>
             
-                {{-- MODO VIDEO: Tu código original del reproductor --}}
-                {{-- Mantenemos wire:ignore SOLO para el video para no romper Plyr --}}
-                <div class="w-full aspect-video bg-black relative shadow-2xl z-10 shrink-0" wire:ignore>
-                    @if(Str::startsWith($currentLesson->video_iframe, '<iframe'))
-                        <div class="plyr__video-embed" id="player">
-                            {!! $currentLesson->video_iframe !!}
-                        </div>
-                    @else
-                        <video id="player" playsinline controls data-poster="{{ $course->image_path }}">
-                            <source src="{{ $currentLesson->video_url }}" type="video/mp4" />
-                        </video>
-                    @endif
-                </div>
-            
+            {{-- CONTENIDO DEBAJO DEL VIDEO (Condicional para Quiz vs Video) --}}
             @if(!isset($currentLesson->type) || $currentLesson->type !== 'quiz')
                 <div class="p-4 lg:p-8 max-w-5xl mx-auto w-full flex-1">
                     
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 lg:mb-8">
                         <h2 class="text-xl lg:text-2xl font-bold text-white leading-tight">{{ $currentLesson->title }}</h2>
                         
+                        {{-- Navegación Manual --}}
                         <div class="flex gap-3 w-full sm:w-auto">
                             @if($this->previousLesson)
                                 <button wire:click="changeLesson({{ $this->previousLesson->id }})" class="flex-1 sm:flex-none justify-center px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-bold transition flex items-center gap-2">
@@ -61,6 +70,7 @@
                         </div>
                     </div>
 
+                    {{-- Tabs de Opciones / Comentarios --}}
                     <div class="mb-6 border-b border-slate-700 overflow-x-auto">
                         <nav class="-mb-px flex space-x-6">
                             <button wire:click="$set('activeTab', 'options')" class="pb-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap {{ $activeTab === 'options' ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-slate-400 hover:text-slate-300' }}">
@@ -91,6 +101,7 @@
                                     @endif
                                 </div>
 
+                                {{-- Recursos --}}
                                 @if($currentLesson->resources && $currentLesson->resources->count() > 0)
                                     <h3 class="font-bold text-white mb-4">Recursos Descargables</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -120,6 +131,7 @@
             @endif
         </div>
 
+        {{-- SIDEBAR LISTADO DE LECCIONES --}}
         <div class="lg:w-[30%] w-full bg-slate-950 border-l border-slate-800 h-full overflow-y-auto custom-scrollbar"
              :class="mobileTab === 'lessons' ? 'block' : 'hidden lg:block'">
             
@@ -146,7 +158,8 @@
                                     $isCurrent = $currentLesson->id == $lesson->id;
                                 @endphp
                                 
-                                <button wire:click="changeLesson({{ $lesson->id }}); mobileTab = 'content'" 
+                                {{-- [CORRECCIÓN] Usamos prevent para que no recargue la página y changeLesson maneje la lógica --}}
+                                <button wire:click.prevent="changeLesson({{ $lesson->id }}); mobileTab = 'content'" 
                                         class="w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all relative overflow-hidden group
                                         {{ $isCurrent ? 'bg-indigo-600/20 border border-indigo-500/50' : 'hover:bg-slate-800 border border-transparent' }}">
                                     
@@ -182,60 +195,40 @@
                         </div>
                     </div>
                 @endforeach
-
-                {{-- ========================================== --}}
-                {{-- BOTÓN DE EXAMEN FINAL (Basado en relación Course->Quiz) --}}
-                {{-- ========================================== --}}
+                
+                {{-- Botón de Examen Final (si existe) --}}
                 @php
-                    // Buscamos el PRIMER examen publicado asociado a este curso
                     $finalExam = $course->quizzes->where('status', 'published')->first();
                 @endphp
-
                 @if($finalExam)
                     <div class="mt-8 pt-6 border-t border-slate-800 px-4">
                         <div class="mb-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Evaluación</div>
-                        
-                        <a href="{{ route('student.quiz.show', $finalExam->id) }}" 
-                        class="relative w-full flex items-center justify-between p-4 bg-gradient-to-br from-indigo-900 to-slate-900 hover:from-indigo-800 hover:to-slate-800 border border-indigo-500/50 rounded-xl shadow-lg group transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
-                            
-                            <div class="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
+                        <a href="{{ route('student.quiz.show', $finalExam->id) }}" class="relative w-full flex items-center justify-between p-4 bg-gradient-to-br from-indigo-900 to-slate-900 hover:from-indigo-800 hover:to-slate-800 border border-indigo-500/50 rounded-xl shadow-lg group transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
                             <div class="flex items-center gap-3 relative z-10">
                                 <div class="w-10 h-10 rounded-lg bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/50 group-hover:scale-110 transition-transform duration-300">
                                     <i class="fas fa-clipboard-check text-xl"></i>
                                 </div>
                                 <div class="text-left flex-1 min-w-0">
                                     <h4 class="font-bold text-white text-sm truncate pr-2">{{ $finalExam->title }}</h4>
-                                    <p class="text-[10px] text-indigo-200">
-                                        <i class="far fa-clock mr-1"></i> {{ $finalExam->duration_minutes }} min
-                                    </p>
                                 </div>
                             </div>
-                            
                             <div class="relative z-10 text-indigo-400 group-hover:text-white transition-colors pl-2">
                                 <i class="fas fa-chevron-right"></i>
                             </div>
                         </a>
                     </div>
                 @endif
-                {{-- ========================================== --}}
-                
             </div>
         </div>
     </div>
 
+    {{-- BARRA INFERIOR MÓVIL --}}
     <div class="fixed bottom-0 w-full bg-slate-950 border-t border-slate-800 lg:hidden z-40 flex justify-around p-3 pb-safe">
-        <button @click="mobileTab = 'content'" 
-                :class="mobileTab === 'content' ? 'text-indigo-400' : 'text-slate-400'"
-                class="flex flex-col items-center gap-1 text-xs font-bold transition">
-            <i class="fas fa-play-circle text-xl"></i>
-            Clase Actual
+        <button @click="mobileTab = 'content'" :class="mobileTab === 'content' ? 'text-indigo-400' : 'text-slate-400'" class="flex flex-col items-center gap-1 text-xs font-bold transition">
+            <i class="fas fa-play-circle text-xl"></i> Clase Actual
         </button>
-        <button @click="mobileTab = 'lessons'" 
-                :class="mobileTab === 'lessons' ? 'text-indigo-400' : 'text-slate-400'"
-                class="flex flex-col items-center gap-1 text-xs font-bold transition">
-            <i class="fas fa-list-ul text-xl"></i>
-            Temario
+        <button @click="mobileTab = 'lessons'" :class="mobileTab === 'lessons' ? 'text-indigo-400' : 'text-slate-400'" class="flex flex-col items-center gap-1 text-xs font-bold transition">
+            <i class="fas fa-list-ul text-xl"></i> Temario
         </button>
     </div>
 
@@ -244,44 +237,50 @@
         <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     @endassets
 
+    {{-- LÓGICA JAVASCRIPT REFACTORIZADA --}}
     <script>
         document.addEventListener('livewire:initialized', () => {
-            let player;
+            let playerInstance = null;
 
-            function initPlayer() {
-                // IMPORTANT: Destroy previous instance to prevent duplicates
-                if (Array.isArray(window.player)) {
-                    window.player.forEach(p => p.destroy());
-                } else if (window.player && typeof window.player.destroy === 'function') {
-                    window.player.destroy();
+            // Función principal para inicializar Plyr
+            function initPlyr(autoplay = false) {
+                const playerElement = document.querySelector('#player');
+                
+                // Si ya existe una instancia o no hay elemento, limpiar
+                if (playerInstance) {
+                    playerInstance.destroy();
+                    playerInstance = null;
                 }
 
-                // Initialize new player
-                const plyrInstance = new Plyr('#player', {
+                if (!playerElement) return;
+
+                // Configuración de Plyr
+                playerInstance = new Plyr(playerElement, {
                     title: '{{ $currentLesson->title }}',
                     controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+                    autoplay: autoplay, // Usar el parámetro para decidir si reproducir
                 });
-                
-                // Save instance globally to manage it later
-                window.player = plyrInstance;
+
+                // [CLAVE] Escuchar cuando el video termina para avanzar automáticamente
+                playerInstance.on('ended', function(event) {
+                    console.log('Video finalizado. Ejecutando autocompletado...');
+                    // Llamar al método de Livewire creado para esto
+                    @this.call('autocompleteLesson'); 
+                });
             }
 
-            // Initial load
-            initPlayer();
+            // 1. Carga inicial
+            initPlyr(false);
 
-            // Handle lesson changes
-            Livewire.on('lesson-changed', (url) => {
-                if(window.player) {
-                    window.player.source = {
-                        type: 'video',
-                        sources: [{
-                            src: url,
-                            provider: url.includes('youtube') ? 'youtube' : (url.includes('vimeo') ? 'vimeo' : 'html5'),
-                        }],
-                    };
-                } else {
-                    initPlayer();
-                }
+            // 2. Escuchar evento de Livewire cuando cambia la lección (Manual o Automático)
+            Livewire.on('lesson-changed', (data) => {
+                const params = data[0] || data; // Manejar si Livewire envía array o objeto
+                console.log('Lección cambiada:', params);
+
+                // Pequeño timeout para permitir que Livewire actualice el DOM (wire:key hace el trabajo pesado)
+                setTimeout(() => {
+                    initPlyr(params.autoplay);
+                }, 100);
             });
         });
     </script>

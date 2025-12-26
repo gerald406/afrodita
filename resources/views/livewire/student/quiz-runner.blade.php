@@ -1,6 +1,5 @@
 <div class="max-w-3xl mx-auto px-4 py-8">
-    
-    {{-- PANTALLA DE RESULTADOS (Se muestra al finalizar) --}}
+
     {{-- PANTALLA DE RESULTADOS (Se muestra al finalizar) --}}
     @if($isFinished)
         <div class="bg-white rounded-lg shadow-lg overflow-hidden text-center p-8 animate-fade-in-up">

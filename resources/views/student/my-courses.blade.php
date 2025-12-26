@@ -65,7 +65,7 @@
                                     </div>
                                     <div class="w-full bg-slate-100 rounded-full h-2 mb-6 overflow-hidden">
                                         <div class="h-full rounded-full transition-all duration-1000 ease-out {{ $progress == 100 ? 'bg-green-500' : 'bg-indigo-500' }}" 
-                                             style="width: {{ $progress }}%"></div>
+                                            style="width: {{ $progress }}%"></div>
                                     </div>
 
                                     @if($progress == 0)

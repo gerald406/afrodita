@@ -44,7 +44,7 @@
                             <label class="block text-sm font-bold text-gray-700">Precio Actual</label>
                             <div class="relative mt-1 rounded-md shadow-sm">
                                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                    <span class="text-gray-500 sm:text-sm">S/.</span>
                                 </div>
                                 <input wire:model="price" type="number" step="0.01" class="block w-full rounded-md border-gray-300 pl-7 focus:border-indigo-500 focus:ring-indigo-500">
                             </div>

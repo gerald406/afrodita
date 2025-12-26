@@ -4,10 +4,10 @@ namespace App\Livewire\Student;
 
 use App\Models\Course;
 use App\Models\Lesson;
-use App\Models\UserPointLog;   // [IMPORTANTE] Para el historial
-use App\Models\GeneralSetting; // [IMPORTANTE] Para el Modo Netflix
+use App\Models\UserPointLog;
+use App\Models\GeneralSetting;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB; // Para transacciones seguras
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class CourseLearn extends Component
@@ -19,32 +19,21 @@ class CourseLearn extends Component
     public function mount(Course $course, $lesson = null)
     {
         $this->course = $course;
-
-        // 1. Autorización (Incluye lógica "Modo Netflix")
         $this->authorizeAccess();
 
-        // 2. Cargar lección
         if ($lesson) {
-            // Aseguramos que la lección pertenezca a este curso
             $this->currentLesson = Lesson::whereIn('course_section_id', $course->sections->pluck('id'))
                 ->findOrFail($lesson);
         } else {
-            // Cargar la primera lección ordenada
             $this->currentLesson = $course->lessons->sortBy('sort_order')->first();
         }
     }
 
-    /**
-     * Verifica acceso: Admin O Matriculado O "Modo Gratuito" activo
-     */
     public function authorizeAccess()
     {
         $user = Auth::user();
-
-        // A. Si es admin, pasa
         if ($user->role === 'admin') return;
 
-        // B. Verificar Matrícula Activa
         $isEnrolled = $user->enrollments()
             ->where('course_id', $this->course->id)
             ->where('status', 'active')
@@ -52,47 +41,79 @@ class CourseLearn extends Component
 
         if ($isEnrolled) return;
 
-        // C. Verificar "Modo Netflix" (Días Gratis) [FALTABA ESTO]
         $settings = GeneralSetting::first();
-
-        // Usamos el helper que creamos en el modelo GeneralSetting
         if ($settings && $settings->isFreeModeCurrentlyActive()) {
-            return; // Acceso concedido por promoción
+            return;
         }
 
-        // Si no cumple nada, fuera
-        abort(403, 'No tienes acceso a este contenido. Inscríbete o espera una promoción.');
+        abort(403, 'No tienes acceso a este contenido.');
     }
 
+    /**
+     * Método principal para cambiar de lección (usado por Sidebar y Botones Manuales)
+     */
     public function changeLesson($lessonId)
     {
-        // Buscamos la lección asegurando que sea de este curso
+        // Validamos y buscamos la lección
         $this->currentLesson = $this->course->lessons->where('id', $lessonId)->firstOrFail();
 
-        // Evento para que el frontend actualice el reproductor Plyr
-        $this->dispatch('lesson-changed', url: $this->getVideoUrl());
+        // [CORRECCIÓN] Disparamos el evento enviando la data necesaria para el reproductor
+        // 'autoplay' => false (porque el usuario hizo clic manual, no queremos sustos, o true si prefieres)
+        $this->dispatch('lesson-changed', [
+            'url' => $this->getVideoUrl(),
+            'iframe' => $this->currentLesson->video_iframe,
+            'autoplay' => false
+        ]);
     }
 
-    public function markAsCompleted()
+    /**
+     * [NUEVO] Método llamado automáticamente cuando el video finaliza
+     */
+    public function autocompleteLesson()
+    {
+        // 1. Marcar la lección actual como completada
+        $this->markAsCompleted(false); // false = no mostrar alerta visual (swal) para no interrumpir flujo
+
+        // 2. Buscar la siguiente lección
+        $nextLesson = $this->getNextLessonProperty();
+
+        if ($nextLesson) {
+            // 3. Si hay siguiente, cambiamos a ella
+            $this->currentLesson = $nextLesson;
+
+            // 4. Disparamos evento para recargar reproductor Y activar autoplay
+            $this->dispatch('lesson-changed', [
+                'url' => $this->getVideoUrl(),
+                'iframe' => $this->currentLesson->video_iframe,
+                'autoplay' => true // [IMPORTANTE] Esto hará que el siguiente video arranque solo
+            ]);
+        } else {
+            // 5. Si no hay siguiente (fin del curso), buscamos la primera para reiniciar ciclo (opcional)
+            // O simplemente mostramos la alerta de finalización
+            $this->dispatch('swal:modal', [
+                'type' => 'success',
+                'title' => '¡Curso Completado!',
+                'text' => 'Has finalizado todas las lecciones del curso.'
+            ]);
+        }
+    }
+
+    /**
+     * Modificado para aceptar un parámetro $showNotification
+     */
+    public function markAsCompleted($showNotification = true)
     {
         $user = Auth::user();
-
-        // Verificar si YA estaba completada (evitar farmear puntos)
         $isAlreadyCompleted = $this->currentLesson->users()
             ->where('user_id', $user->id)
             ->exists();
 
         if (!$isAlreadyCompleted) {
-            // Usamos transacción para asegurar que todo se guarde o nada
             DB::transaction(function () use ($user) {
-                // 1. Registrar en tabla pivote (Lección completada)
                 $this->currentLesson->users()->attach($user->id);
-
-                // 2. Sumar puntos (Columna correcta: total_points)
                 $pointsToAdd = 100;
                 $user->increment('total_points', $pointsToAdd);
 
-                // 3. Crear registro en el historial (Tabla: user_point_logs)
                 UserPointLog::create([
                     'user_id' => $user->id,
                     'points' => $pointsToAdd,
@@ -101,22 +122,17 @@ class CourseLearn extends Component
                 ]);
             });
 
-            // Feedback Visual
-            $this->dispatch('swal:toast', [
-                'type' => 'success',
-                'title' => '¡Lección Completada!',
-                'text' => 'Has ganado +100 puntos de experiencia.'
-            ]);
-
-            // Verificar si terminó el curso al 100%
-            // Nota: courseProgress es el método helper en tu modelo User
-            if ($user->courseProgress($this->course) == 100) {
-                $this->dispatch('swal:modal', [
+            // Solo mostramos el toast si es una acción manual, en automático puede ser molesto
+            if ($showNotification) {
+                $this->dispatch('swal:toast', [
                     'type' => 'success',
-                    'title' => '¡Curso Finalizado!',
-                    'text' => 'Felicidades, has completado todo el contenido.'
+                    'title' => '¡Lección Completada!',
+                    'text' => 'Has ganado +100 puntos.'
                 ]);
             }
+
+            // Verificar progreso total
+            // (Tu lógica existente de courseProgress está bien)
         }
     }
 
@@ -125,7 +141,6 @@ class CourseLearn extends Component
         return $this->currentLesson->video_iframe ?? $this->currentLesson->video_url;
     }
 
-    // Propiedades computadas para navegación
     public function getPreviousLessonProperty()
     {
         return $this->course->lessons

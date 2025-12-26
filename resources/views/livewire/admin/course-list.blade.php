@@ -70,11 +70,11 @@
 
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900 font-bold">
-                                    {{ $course->price == 0 ? 'GRATIS' : '$' . number_format($course->price, 2) }}
+                                    {{ $course->price == 0 ? 'GRATIS' : 'S/.' . number_format($course->price, 2) }}
                                 </div>
                                 @if($course->compare_price)
                                     <div class="text-xs text-gray-400 line-through">
-                                        ${{ number_format($course->compare_price, 2) }}
+                                        S/. {{ number_format($course->compare_price, 2) }}
                                     </div>
                                 @endif
                             </td>

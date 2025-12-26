@@ -137,9 +137,9 @@
                                 @if($course->price == 0)
                                     <span class="text-4xl font-extrabold text-gray-900">Gratis</span>
                                 @else
-                                    <span class="text-4xl font-extrabold text-gray-900">${{ number_format($course->price, 2) }}</span>
+                                    <span class="text-4xl font-extrabold text-gray-900">S/.{{ number_format($course->price, 2) }}</span>
                                     @if($course->compare_price)
-                                        <span class="text-lg text-gray-400 line-through mb-1.5">${{ number_format($course->compare_price, 2) }}</span>
+                                        <span class="text-lg text-gray-400 line-through mb-1.5">S/.{{ number_format($course->compare_price, 2) }}</span>
                                     @endif
                                 @endif
                             </div>
