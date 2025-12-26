@@ -145,7 +145,11 @@ class CourseForm extends Component
         // Validación personalizada para ignorar el slug propio al editar
         $this->validate([
             'title' => 'required|min:5',
-            'slug'  => 'required|unique:courses,slug,' . ($this->course->id ?? ''),
+            'slug'  => [
+                'required',
+                'alpha_dash', // Solo letras, números, guiones y guiones bajos
+                'unique:courses,slug,' . ($this->course->id ?? '')
+            ],
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'newImage' => 'nullable|image|max:2048', // 2MB Max
