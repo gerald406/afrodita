@@ -31,17 +31,14 @@ class EnrollmentController extends Controller
         // Si es de PAGO, queda 'pending' hasta que el admin apruebe.
         $initialStatus = ($course->price == 0) ? 'active' : 'pending';
 
-        // 3. Crear la matrícula con asignación controlada de price_paid
+        // 3. Crear la matrícula con todos los datos de forma segura
         $enrollment = Enrollment::create([
             'user_id' => Auth::id(),
             'course_id' => $course->id,
             'status' => $initialStatus,
             'enrolled_at' => now(),
+            'price_paid' => $course->price // Asignado directamente para prevenir manipulación
         ]);
-
-        // Asignar price_paid de forma segura (no desde request)
-        $enrollment->price_paid = $course->price;
-        $enrollment->save();
 
         // Registrar log de auditoría
         \Log::info('Nueva inscripción', [

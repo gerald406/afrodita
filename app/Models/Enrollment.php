@@ -11,7 +11,8 @@ class Enrollment extends Model
         'course_id',
         'status',
         'progress_percent',
-        'enrolled_at'
+        'enrolled_at',
+        'price_paid' // Agregado para prevenir mass assignment vulnerability
     ];
 
     protected $casts = [
