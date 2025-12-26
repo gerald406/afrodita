@@ -23,8 +23,10 @@ class CourseCatalog extends Component
     public $category = ''; // ID o Slug de la categoría
 
     // Resetear paginación al cambiar filtros
-    public function updatedSearch()
+    public function updatedSearch($value)
     {
+        // Sanitizar input de búsqueda
+        $this->search = strip_tags($value);
         $this->resetPage();
     }
     public function updatedSort()

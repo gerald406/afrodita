@@ -70,6 +70,7 @@
                         <input type="text" 
                                name="search" 
                                value="{{ request('search') }}"
+                               maxlength="100"
                                placeholder="¿Qué quieres aprender hoy?" 
                                class="w-full bg-slate-100 border-none rounded-2xl py-3 pl-11 pr-4 text-sm focus:ring-2 focus:ring-red-100 focus:bg-white transition-all shadow-sm placeholder-slate-400 text-slate-700">
                     </div>
