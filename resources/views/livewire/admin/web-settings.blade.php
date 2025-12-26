@@ -87,7 +87,26 @@
                     </div>
                 </div>
             </div>
-            <div>
+            
+            <div class="col-span-6 sm:col-span-4 mt-4">
+                <h3 class="text-lg font-medium text-gray-900">Configuración de WhatsApp</h3>
+                <div class="border-t border-gray-200 mt-2 py-4">
+                    
+                    <div class="mb-4">
+                        <x-label for="whatsapp_number" value="Número de WhatsApp (con código de país, sin +)" />
+                        <x-input id="whatsapp_number" type="text" class="mt-1 block w-full" wire:model="whatsapp_number" placeholder="Ej: 51962351552" />
+                        <x-input-error for="whatsapp_number" class="mt-2" />
+                        <span class="text-xs text-gray-500">Ejemplo Perú: 51900000000</span>
+                    </div>
+
+                    <div>
+                        <x-label for="whatsapp_message" value="Mensaje Predeterminado" />
+                        <textarea id="whatsapp_message" wire:model="whatsapp_message" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"></textarea>
+                        <x-input-error for="whatsapp_message" class="mt-2" />
+                    </div>
+                </div>
+            </div>
+            
 
             <h3 class="text-lg font-bold text-gray-900 border-b pb-2 mt-4 mb-4 flex items-center">
                 <i class="fas fa-gift text-pink-500 mr-2"></i> Campaña de Acceso Gratuito

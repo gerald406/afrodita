@@ -21,6 +21,9 @@ class WebSettings extends Component
     public $free_mode_end;
     public $free_mode_message;
 
+    public $whatsapp_number;
+    public $whatsapp_message;
+
     public function mount()
     {
         // Obtener o crear configuración por defecto
@@ -40,11 +43,18 @@ class WebSettings extends Component
         $this->free_mode_start = $settings->free_mode_start?->format('Y-m-d\TH:i');
         $this->free_mode_end = $settings->free_mode_end?->format('Y-m-d\TH:i');
         $this->free_mode_message = $settings->free_mode_message;
+
+        $this->whatsapp_number = $settings->whatsapp_number;
+        $this->whatsapp_message = $settings->whatsapp_message;
     }
 
     public function save()
     {
-        $this->validate(['site_name' => 'required']);
+        $this->validate([
+            'site_name' => 'required',
+            'whatsapp_number' => 'nullable|numeric', // Solo números
+            'whatsapp_message' => 'nullable|string|max:255',
+        ]);
 
         $settings = GeneralSetting::find(1);
         $data = [
@@ -55,6 +65,8 @@ class WebSettings extends Component
             'free_mode_start' => $this->free_mode_start,
             'free_mode_end' => $this->free_mode_end,
             'free_mode_message' => $this->free_mode_message,
+            'whatsapp_number' => $this->whatsapp_number,
+            'whatsapp_message' => $this->whatsapp_message,
         ];
 
         // Lógica de subida de imágenes

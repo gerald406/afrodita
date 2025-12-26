@@ -22,6 +22,8 @@ class GeneralSetting extends Model
         'free_mode_start',
         'free_mode_end',
         'free_mode_message',
+        'whatsapp_number',
+        'whatsapp_message',
     ];
 
     /**

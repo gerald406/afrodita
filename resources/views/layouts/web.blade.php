@@ -121,11 +121,33 @@
 
     </div>
 
-    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-4">
-        <a href="https://wa.me/" target="_blank" class="w-12 h-12 md:w-14 md:h-14 bg-[#25D366] rounded-full shadow-lg shadow-green-200 flex items-center justify-center text-white text-2xl md:text-3xl hover:scale-110 transition border-4 border-white group relative">
-            <i class="fab fa-whatsapp"></i>
-        </a>
-    </div>
+    {{-- Botón Flotante de WhatsApp --}}
+    @if(isset($web_settings->whatsapp_number) && !empty($web_settings->whatsapp_number))
+        @php
+            // Limpiamos el número por si acaso (quitamos espacios o símbolos +)
+            $phone = preg_replace('/[^0-9]/', '', $web_settings->whatsapp_number);
+            
+            // Codificamos el mensaje para URL (espacios a %20, etc)
+            $text = urlencode($web_settings->whatsapp_message ?? 'Hola, deseo información.');
+            
+            $whatsappUrl = "https://api.whatsapp.com/send?phone={$phone}&text={$text}";
+        @endphp
+
+        <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-4 animate-bounce-slow">
+            <a href="{{ $whatsappUrl }}" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="w-12 h-12 md:w-14 md:h-14 bg-[#25D366] rounded-full shadow-lg shadow-green-200 flex items-center justify-center text-white text-2xl md:text-3xl hover:scale-110 transition border-4 border-white group relative">
+                
+                <i class="fab fa-whatsapp"></i>
+                
+                {{-- Tooltip opcional al pasar el mouse --}}
+                <span class="absolute right-full mr-3 bg-white text-slate-700 text-xs font-bold px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                    ¡Contáctanos!
+                </span>
+            </a>
+        </div>
+    @endif
 
     @livewireScripts
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
