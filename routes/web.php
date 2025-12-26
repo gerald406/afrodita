@@ -80,6 +80,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             return view('admin.courses.create');
         })->name('courses.create');
         Route::get('/courses/{course:slug}/edit', function (App\Models\Course $course) {
+            // Verificar autorización usando CoursePolicy
+            if (!auth()->user()->can('update', $course)) {
+                abort(403, 'No tienes permiso para editar este curso.');
+            }
             return view('admin.courses.edit', compact('course'));
         })->name('courses.edit');
 
