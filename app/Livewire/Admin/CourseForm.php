@@ -268,9 +268,31 @@ class CourseForm extends Component
 
         // Si empieza con <iframe, asumimos que es código embebido
         if (Str::startsWith(trim($this->lessonVideoSource), '<iframe')) {
-            $videoIframe = $this->lessonVideoSource;
+            // Validar que el iframe sea de dominios confiables
+            $allowedDomains = ['youtube.com', 'youtu.be', 'vimeo.com', 'wistia.com', 'wistia.net'];
+            $isValid = false;
+
+            foreach ($allowedDomains as $domain) {
+                if (Str::contains($this->lessonVideoSource, $domain)) {
+                    $isValid = true;
+                    break;
+                }
+            }
+
+            if (!$isValid) {
+                $this->addError('lessonVideoSource', 'Solo se permiten videos de YouTube, Vimeo o Wistia.');
+                return;
+            }
+
+            // Sanitizar: permitir solo la etiqueta iframe
+            $videoIframe = strip_tags($this->lessonVideoSource, '<iframe>');
         } else {
-            $videoUrl = $this->lessonVideoSource;
+            // Validar que sea una URL válida
+            $videoUrl = filter_var($this->lessonVideoSource, FILTER_VALIDATE_URL);
+            if (!$videoUrl) {
+                $this->addError('lessonVideoSource', 'La URL proporcionada no es válida.');
+                return;
+            }
         }
 
         $data = [
