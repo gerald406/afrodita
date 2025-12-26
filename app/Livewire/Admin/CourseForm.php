@@ -320,12 +320,12 @@ class CourseForm extends Component
 
     public function addResource()
     {
-        // 1. Validar inputs según el tipo elegido
+        // 1. Validar inputs según el tipo elegido con validación estricta de extensiones
         $this->validate([
             'resourceTitle' => 'required|min:3',
             'resourceType' => 'required|in:pdf,link,zip,image',
-            // Si no es un link, el archivo es obligatorio
-            'resourceFile' => $this->resourceType !== 'link' ? 'required|file|max:10240' : 'nullable', // Max 10MB
+            // Validación estricta según tipo
+            'resourceFile' => $this->resourceType !== 'link' ? $this->getFileValidationRules() : 'nullable',
             // Si es link, la URL es obligatoria
             'resourceUrl' => $this->resourceType === 'link' ? 'required|url' : 'nullable',
         ]);
@@ -362,6 +362,25 @@ class CourseForm extends Component
             // Opcional: Podrías borrar el archivo físico del disco aquí si no es link
             $resource->delete();
             $this->notify('Recurso eliminado', 'info');
+        }
+    }
+
+    /**
+     * Obtener reglas de validación de archivo según el tipo
+     */
+    private function getFileValidationRules()
+    {
+        $baseRules = 'required|file|max:10240'; // Max 10MB
+
+        switch ($this->resourceType) {
+            case 'pdf':
+                return $baseRules . '|mimes:pdf';
+            case 'zip':
+                return $baseRules . '|mimes:zip,rar,7z';
+            case 'image':
+                return $baseRules . '|mimes:jpg,jpeg,png,gif,webp,svg';
+            default:
+                return $baseRules;
         }
     }
 
