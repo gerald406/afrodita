@@ -22,6 +22,12 @@ class ReportController extends Controller
     {
         try {
             $course = Course::findOrFail($courseId);
+
+            // SEGURIDAD: Verificar autorización usando CoursePolicy
+            if (!auth()->user()->can('view', $course)) {
+                abort(403, 'No tienes permiso para acceder a este reporte.');
+            }
+
             // Limpiamos el nombre del curso para que sea un nombre de archivo válido
             $fileName = 'curso_' . \Str::slug($course->title) . '_' . date('d-m-Y') . '.xlsx';
 
