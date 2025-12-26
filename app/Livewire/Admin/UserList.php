@@ -26,6 +26,16 @@ class UserList extends Component
     #[On('delete-confirmed')]
     public function deleteUser($id)
     {
+        // Verificar que el usuario sea admin
+        if (!auth()->user()->isAdmin()) {
+            $this->dispatch('swal:toast', [
+                'type' => 'error',
+                'title' => 'Acción denegada',
+                'text' => 'No tienes permiso para realizar esta acción.'
+            ]);
+            return;
+        }
+
         // Evitar que el admin se borre a sí mismo
         if ($id == auth()->id()) {
             $this->dispatch('swal:toast', [
@@ -47,6 +57,12 @@ class UserList extends Component
                 'text' => 'El registro ha sido borrado correctamente.'
             ]);
         } catch (\Exception $e) {
+            // Registrar el error para debugging
+            \Log::error('Error al eliminar usuario', [
+                'user_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
             $this->dispatch('swal:toast', [
                 'type' => 'error',
                 'title' => 'Error',
