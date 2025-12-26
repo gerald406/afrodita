@@ -20,10 +20,14 @@ class ReportController extends Controller
     // NUEVO: Reporte Por Curso
     public function downloadCourseStudents($courseId)
     {
-        $course = Course::findOrFail($courseId);
-        // Limpiamos el nombre del curso para que sea un nombre de archivo válido
-        $fileName = 'curso_' . \Str::slug($course->title) . '_' . date('d-m-Y') . '.xlsx';
+        try {
+            $course = Course::findOrFail($courseId);
+            // Limpiamos el nombre del curso para que sea un nombre de archivo válido
+            $fileName = 'curso_' . \Str::slug($course->title) . '_' . date('d-m-Y') . '.xlsx';
 
-        return Excel::download(new CourseStudentsExport($courseId), $fileName);
+            return Excel::download(new CourseStudentsExport($courseId), $fileName);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Curso no encontrado');
+        }
     }
 }

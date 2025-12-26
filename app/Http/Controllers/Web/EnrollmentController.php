@@ -43,6 +43,14 @@ class EnrollmentController extends Controller
         $enrollment->price_paid = $course->price;
         $enrollment->save();
 
+        // Registrar log de auditoría
+        \Log::info('Nueva inscripción', [
+            'user_id' => Auth::id(),
+            'course_id' => $course->id,
+            'status' => $initialStatus,
+            'price_paid' => $course->price
+        ]);
+
         // 4. Mensaje de feedback según el caso
         if ($initialStatus === 'active') {
             $message = '¡Te has inscrito correctamente! Ya puedes ver las clases.';

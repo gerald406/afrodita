@@ -62,9 +62,18 @@ class UserForm extends Component
 
         if ($this->user) {
             $this->user->update($data);
+            \Log::info('Usuario actualizado', [
+                'user_id' => $this->user->id,
+                'by' => auth()->id()
+            ]);
             $message = 'Usuario actualizado correctamente';
         } else {
-            User::create($data);
+            $newUser = User::create($data);
+            \Log::info('Usuario creado', [
+                'user_id' => $newUser->id,
+                'role' => $newUser->role,
+                'by' => auth()->id()
+            ]);
             $message = 'Usuario registrado correctamente';
         }
 
