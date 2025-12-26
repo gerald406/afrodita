@@ -287,8 +287,31 @@ class CourseForm extends Component
                 return;
             }
 
-            // Sanitizar: permitir solo la etiqueta iframe
-            $videoIframe = strip_tags($this->lessonVideoSource, '<iframe>');
+            // SEGURIDAD: Extraer solo la URL y reconstruir el iframe limpio
+            // para prevenir XSS mediante atributos maliciosos (ej: onload="alert('XSS')")
+            if (preg_match('/src=["\']([^"\']+)["\']/', $this->lessonVideoSource, $matches)) {
+                $srcUrl = $matches[1];
+
+                // Validar nuevamente que la URL extraída sea de dominios confiables
+                $isValidUrl = false;
+                foreach ($allowedDomains as $domain) {
+                    if (str_contains($srcUrl, $domain)) {
+                        $isValidUrl = true;
+                        break;
+                    }
+                }
+
+                if (!$isValidUrl) {
+                    $this->addError('lessonVideoSource', 'La URL del video no es de un dominio permitido.');
+                    return;
+                }
+
+                // Reconstruir iframe limpio sin atributos maliciosos
+                $videoIframe = '<iframe src="' . htmlspecialchars($srcUrl, ENT_QUOTES, 'UTF-8') . '" frameborder="0" allowfullscreen></iframe>';
+            } else {
+                $this->addError('lessonVideoSource', 'No se pudo extraer la URL del iframe.');
+                return;
+            }
         } else {
             // Validar que sea una URL válida
             $videoUrl = filter_var($this->lessonVideoSource, FILTER_VALIDATE_URL);
