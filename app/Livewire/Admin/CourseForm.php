@@ -208,10 +208,13 @@ class CourseForm extends Component
     public function deleteSection($id)
     {
         $section = CourseSection::find($id);
-        if ($section) {
+        // Verificar que la sección pertenece al curso actual
+        if ($section && $section->course_id === $this->course->id) {
             $section->delete();
             $this->course->refresh();
             $this->notify('Módulo eliminado', 'info');
+        } else {
+            $this->notify('Sección no encontrada o no autorizada', 'error');
         }
     }
 
@@ -326,10 +329,13 @@ class CourseForm extends Component
     public function deleteLesson($id)
     {
         $lesson = Lesson::find($id);
-        if ($lesson) {
+        // Verificar que la lección pertenece a una sección del curso actual
+        if ($lesson && $lesson->courseSection && $lesson->courseSection->course_id === $this->course->id) {
             $lesson->delete();
             $this->course->refresh();
             $this->notify('Lección eliminada', 'info');
+        } else {
+            $this->notify('Lección no encontrada o no autorizada', 'error');
         }
     }
 
