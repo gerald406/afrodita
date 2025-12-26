@@ -54,7 +54,9 @@ Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers.ind
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
 
     // --- PROCESO DE MATRÍCULA (Botón "Comprar/Inscribirse") ---
-    Route::post('/enroll/{course}', [EnrollmentController::class, 'store'])->name('enrollments.store');
+    Route::post('/enroll/{course}', [EnrollmentController::class, 'store'])
+        ->middleware('throttle:5,1') // Máximo 5 inscripciones por minuto
+        ->name('enrollments.store');
 
     // --- ÁREA DE ESTUDIANTE (Solo rol: student) ---
     Route::middleware(['role:student'])->prefix('student')->name('student.')->group(function () {
