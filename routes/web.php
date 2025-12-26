@@ -95,6 +95,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
             return view('admin.users.create');
         })->name('users.create');
         Route::get('/users/{user}/edit', function (App\Models\User $user) {
+            // SEGURIDAD: Verificar autorización usando UserPolicy
+            if (!auth()->user()->can('update', $user)) {
+                abort(403, 'No tienes permiso para editar este usuario.');
+            }
             return view('admin.users.edit', compact('user'));
         })->name('users.edit');
 
