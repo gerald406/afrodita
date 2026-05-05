@@ -15,7 +15,8 @@ class Question extends Model
         'type',
         'points',
         'feedback',
-        'sort_order'
+        'sort_order',
+        'question_image', // ← FIX CRÍTICO: faltaba este campo
     ];
 
     // --- RELACIONES ---
@@ -25,9 +26,9 @@ class Question extends Model
         return $this->belongsTo(Quiz::class);
     }
 
-    // Una pregunta tiene múltiples opciones de respuesta
     public function answers()
     {
-        return $this->hasMany(QuestionAnswer::class);
+        return $this->hasMany(QuestionAnswer::class)
+            ->orderBy('sort_order'); // orden garantizado
     }
 }
